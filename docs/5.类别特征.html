@@ -6,7 +6,7 @@
         <title>五、类别特征：机器鸡时代的鸡蛋计数 · HonKit</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="HonKit 5.1.4">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -49,7 +49,7 @@
     
     
     <meta name="HandheldFriendly" content="true"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
@@ -364,55 +364,55 @@
 </code></pre>
 <p>习惯上我们还添加一个常量来，这样的话当x全部为0，y不会为0.</p>
 <p>例5-1.在独热编码上的线性回归</p>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
-<span class="hljs-keyword">from</span> sklearn <span class="hljs-keyword">import</span> linear_model
-df = pd.DataFrame({<span class="hljs-string">'City'</span>: [<span class="hljs-string">'SF'</span>, <span class="hljs-string">'SF'</span>, <span class="hljs-string">'SF'</span>, <span class="hljs-string">'NYC'</span>, <span class="hljs-string">'NYC'</span>, <span class="hljs-string">'NYC'</span>,<span class="hljs-string">'Seattle'</span>, <span class="hljs-string">'Seattle'</span>, <span class="hljs-string">'Seattle'</span>],
-                   <span class="hljs-string">'Rent'</span>: [<span class="hljs-number">3999</span>, <span class="hljs-number">4000</span>, <span class="hljs-number">4001</span>, <span class="hljs-number">3499</span>, <span class="hljs-number">3500</span>, <span class="hljs-number">3501</span>, <span class="hljs-number">2499</span>,<span class="hljs-number">2500</span>,<span class="hljs-number">2501</span>]})
-<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'Rent'</span>].mean()
-<span class="hljs-number">3333.3333333333335</span>
+<pre><code class="lang-pythonthon">import pandas as pd
+from sklearn import linear_model
+df = pd.DataFrame({'City': ['SF', 'SF', 'SF', 'NYC', 'NYC', 'NYC','Seattle', 'Seattle', 'Seattle'],
+                   'Rent': [3999, 4000, 4001, 3499, 3500, 3501, 2499,2500,2501]})
+&gt;&gt;&gt; df['Rent'].mean()
+3333.3333333333335
 
-one_hot_df = pd.get_dummies(df, prefix=[<span class="hljs-string">'city'</span>])
-<span class="hljs-meta">&gt;&gt;&gt; </span>one_hot_df
+one_hot_df = pd.get_dummies(df, prefix=['city'])
+&gt;&gt;&gt; one_hot_df
    Rent  city_NYC  city_SF  city_Seattle
-<span class="hljs-number">0</span>  <span class="hljs-number">3999</span>         <span class="hljs-number">0</span>        <span class="hljs-number">1</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">1</span>  <span class="hljs-number">4000</span>         <span class="hljs-number">0</span>        <span class="hljs-number">1</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">2</span>  <span class="hljs-number">4001</span>         <span class="hljs-number">0</span>        <span class="hljs-number">1</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">3</span>  <span class="hljs-number">3499</span>         <span class="hljs-number">1</span>        <span class="hljs-number">0</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">4</span>  <span class="hljs-number">3500</span>         <span class="hljs-number">1</span>        <span class="hljs-number">0</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">5</span>  <span class="hljs-number">3501</span>         <span class="hljs-number">1</span>        <span class="hljs-number">0</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">6</span>  <span class="hljs-number">2499</span>         <span class="hljs-number">0</span>        <span class="hljs-number">0</span>             <span class="hljs-number">1</span>
-<span class="hljs-number">7</span>  <span class="hljs-number">2500</span>         <span class="hljs-number">0</span>        <span class="hljs-number">0</span>             <span class="hljs-number">1</span>
-<span class="hljs-number">8</span>  <span class="hljs-number">2501</span>         <span class="hljs-number">0</span>        <span class="hljs-number">0</span>             <span class="hljs-number">1</span>
+0  3999         0        1             0
+1  4000         0        1             0
+2  4001         0        1             0
+3  3499         1        0             0
+4  3500         1        0             0
+5  3501         1        0             0
+6  2499         0        0             1
+7  2500         0        0             1
+8  2501         0        0             1
 
 model = linear_model.LinearRegression()
-model.fit(one_hot_df[[<span class="hljs-string">'city_NYC'</span>, <span class="hljs-string">'city_SF'</span>, <span class="hljs-string">'city_Seattle'</span>]],
-         one_hot_df[[<span class="hljs-string">'Rent'</span>]])
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.coef_
-array([[ <span class="hljs-number">166.66666667</span>,  <span class="hljs-number">666.66666667</span>, -<span class="hljs-number">833.33333333</span>]])
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.intercept_
-array([ <span class="hljs-number">3333.33333333</span>])
+model.fit(one_hot_df[['city_NYC', 'city_SF', 'city_Seattle']],
+         one_hot_df[['Rent']])
+&gt;&gt;&gt; model.coef_
+array([[ 166.66666667,  666.66666667, -833.33333333]])
+&gt;&gt;&gt; model.intercept_
+array([ 3333.33333333])
 </code></pre>
 <p>使用dummy code进行回归</p>
-<pre><code class="lang-python">dummy_df = pd.get_dummies(df, prefix=[<span class="hljs-string">'city'</span>], drop_first=<span class="hljs-literal">True</span>)
+<pre><code class="lang-pythonthon">dummy_df = pd.get_dummies(df, prefix=['city'], drop_first=True)
 
-<span class="hljs-meta">&gt;&gt;&gt; </span>dummy_df
+&gt;&gt;&gt; dummy_df
    Rent  city_SF  city_Seattle
-<span class="hljs-number">0</span>  <span class="hljs-number">3999</span>        <span class="hljs-number">1</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">1</span>  <span class="hljs-number">4000</span>        <span class="hljs-number">1</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">2</span>  <span class="hljs-number">4001</span>        <span class="hljs-number">1</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">3</span>  <span class="hljs-number">3499</span>        <span class="hljs-number">0</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">4</span>  <span class="hljs-number">3500</span>        <span class="hljs-number">0</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">5</span>  <span class="hljs-number">3501</span>        <span class="hljs-number">0</span>             <span class="hljs-number">0</span>
-<span class="hljs-number">6</span>  <span class="hljs-number">2499</span>        <span class="hljs-number">0</span>             <span class="hljs-number">1</span>
-<span class="hljs-number">7</span>  <span class="hljs-number">2500</span>        <span class="hljs-number">0</span>             <span class="hljs-number">1</span>
-<span class="hljs-number">8</span>  <span class="hljs-number">2501</span>        <span class="hljs-number">0</span>             <span class="hljs-number">1</span>
+0  3999        1             0
+1  4000        1             0
+2  4001        1             0
+3  3499        0             0
+4  3500        0             0
+5  3501        0             0
+6  2499        0             1
+7  2500        0             1
+8  2501        0             1
 
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.fit(dummy_df[[<span class="hljs-string">'city_SF'</span>, <span class="hljs-string">'city_Seattle'</span>]], dummy_df[<span class="hljs-string">'Rent'</span>])
-LinearRegression(copy_X=<span class="hljs-literal">True</span>, fit_intercept=<span class="hljs-literal">True</span>, n_jobs=<span class="hljs-number">1</span>, normalize=<span class="hljs-literal">False</span>)
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.coef_
-array([  <span class="hljs-number">500.</span>, -<span class="hljs-number">1000.</span>])
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.intercept_
-<span class="hljs-number">3500.0</span>
+&gt;&gt;&gt; model.fit(dummy_df[['city_SF', 'city_Seattle']], dummy_df['Rent'])
+LinearRegression(copy_X=True, fit_intercept=True, n_jobs=1, normalize=False)
+&gt;&gt;&gt; model.coef_
+array([  500., -1000.])
+&gt;&gt;&gt; model.intercept_
+3500.0
 </code></pre>
 <p>通过独热编码，截距项表示目标变量的全局均值租金价格，并且每个线性系数表示该城市的平均租金与全局平均值的差异。</p>
 <p>通过虚拟编码，偏差系数代表响应的平均值参考类别的变量y，在这个例子中是纽约市。该第i个特征的系数等于平均响应之间的差异第i类别的值和参考类别的平均值。</p>
@@ -475,25 +475,25 @@ array([  <span class="hljs-number">500.</span>, -<span class="hljs-number">1000.
 </table>
 <p>Effect编码与虚拟编码非常相似，但是在线性回归中更容易被拟合。例子5-2表达了运行机理。截距项表示目标的全球平均值变量，单个系数表示各个类别的平均值与全球平均值有多少差异。 （这被称为类别或级别的主要效果，因此名称为“效果编码”。）独热编码实际上具有相同的截距和系数，但在这种情况下，每个城市都有线性系数。 在效果编码中，没有单一特征代表参考类别。 因此，参考类别的影响需要分别计算为所有其他类别的系数的负和。(查看<a href="https://stats.idre.ucla.edu" target="_blank">what is effect coding?</a>)</p>
 <p>例子5-2 Effect编码的线性回归</p>
-<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>effect_df = dummy_df.copy()
-<span class="hljs-meta">&gt;&gt;&gt; </span>effect_df.ix[<span class="hljs-number">3</span>:<span class="hljs-number">5</span>, [<span class="hljs-string">'city_SF'</span>, <span class="hljs-string">'city_Seattle'</span>]] = -<span class="hljs-number">1.0</span>
-<span class="hljs-meta">&gt;&gt;&gt; </span>effect_df
+<pre><code class="lang-pythonthon">&gt;&gt;&gt; effect_df = dummy_df.copy()
+&gt;&gt;&gt; effect_df.ix[3:5, ['city_SF', 'city_Seattle']] = -1.0
+&gt;&gt;&gt; effect_df
    Rent  city_SF  city_Seattle
-<span class="hljs-number">0</span>  <span class="hljs-number">3999</span>      <span class="hljs-number">1.0</span>           <span class="hljs-number">0.0</span>
-<span class="hljs-number">1</span>  <span class="hljs-number">4000</span>      <span class="hljs-number">1.0</span>           <span class="hljs-number">0.0</span>
-<span class="hljs-number">2</span>  <span class="hljs-number">4001</span>      <span class="hljs-number">1.0</span>           <span class="hljs-number">0.0</span>
-<span class="hljs-number">3</span>  <span class="hljs-number">3499</span>     -<span class="hljs-number">1.0</span>          -<span class="hljs-number">1.0</span>
-<span class="hljs-number">4</span>  <span class="hljs-number">3500</span>     -<span class="hljs-number">1.0</span>          -<span class="hljs-number">1.0</span>
-<span class="hljs-number">5</span>  <span class="hljs-number">3501</span>     -<span class="hljs-number">1.0</span>          -<span class="hljs-number">1.0</span>
-<span class="hljs-number">6</span>  <span class="hljs-number">2499</span>      <span class="hljs-number">0.0</span>           <span class="hljs-number">1.0</span>
-<span class="hljs-number">7</span>  <span class="hljs-number">2500</span>      <span class="hljs-number">0.0</span>           <span class="hljs-number">1.0</span>
-<span class="hljs-number">8</span>  <span class="hljs-number">2501</span>      <span class="hljs-number">0.0</span>           <span class="hljs-number">1.0</span>
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.fit(effect_df[[<span class="hljs-string">'city_SF'</span>, <span class="hljs-string">'city_Seattle'</span>]], effect_df[<span class="hljs-string">'Rent'</span>])
-LinearRegression(copy_X=<span class="hljs-literal">True</span>, fit_intercept=<span class="hljs-literal">True</span>, n_jobs=<span class="hljs-number">1</span>, normalize=<span class="hljs-literal">False</span>)
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.coef_
-array([ <span class="hljs-number">666.66666667</span>, -<span class="hljs-number">833.33333333</span>])
-<span class="hljs-meta">&gt;&gt;&gt; </span>model.intercept_
-<span class="hljs-number">3333.3333333333335</span>
+0  3999      1.0           0.0
+1  4000      1.0           0.0
+2  4001      1.0           0.0
+3  3499     -1.0          -1.0
+4  3500     -1.0          -1.0
+5  3501     -1.0          -1.0
+6  2499      0.0           1.0
+7  2500      0.0           1.0
+8  2501      0.0           1.0
+&gt;&gt;&gt; model.fit(effect_df[['city_SF', 'city_Seattle']], effect_df['Rent'])
+LinearRegression(copy_X=True, fit_intercept=True, n_jobs=1, normalize=False)
+&gt;&gt;&gt; model.coef_
+array([ 666.66666667, -833.33333333])
+&gt;&gt;&gt; model.intercept_
+3333.3333333333335
 </code></pre>
 <p>类别变量的优点和缺点</p>
 <p>独热，虚拟和效果编码非常相似。 他们每个人都有优点和缺点。 独热编码是多余的，它允许多个有效模型一样的问题。 非唯一性有时候对解释有问题。该优点是每个特征都明显对应于一个类别。 此外，失踪数据可以编码为全零矢量，输出应该是整体目标变量的平均值。</p>
@@ -518,79 +518,79 @@ array([ <span class="hljs-number">666.66666667</span>, -<span class="hljs-number
 <p>图5-2 哈希编码</p>
 <p>当有很多特征时，存储特征向量可能占用很多空间。 特征散列将原始特征向量压缩为m维通过对特征ID应用散列函数来创建矢量。 例如，如果原件特征是文档中的单词，那么散列版本将具有固定的词汇大小为m，无论输入中有多少独特词汇。</p>
 <p>例5-3 对单词的特征哈希</p>
-<pre><code class="lang-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">hash_features</span>(<span class="hljs-params">word_list,m</span>):
-    output = [<span class="hljs-number">0</span>]*m
+<pre><code class="lang-pythonthon">def hash_features(word_list,m):
+    output = [0]*m
 
-    <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> word_list:
+    for word in word_list:
         index = hash_fcn(word)%m
-        output[index] += <span class="hljs-number">1</span>
+        output[index] += 1
 
-    <span class="hljs-keyword">return</span> output
+    return output
 </code></pre>
 <p>功能散列的另一个变体添加了一个符号组件，因此计数也是从哈希箱中增加或减少。 这确保了内部产品之间散列特征与原始特征的期望值相同。</p>
-<pre><code class="lang-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">hash_features</span>(<span class="hljs-params">word_list,m</span>):
-    output = [<span class="hljs-number">0</span>]*m
-    <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> word_list:
+<pre><code class="lang-pythonthon">def hash_features(word_list,m):
+    output = [0]*m
+    for word in word_list:
         index = hash_fcn(word)%m
 
-        sign_bit = sign_hash(word) % <span class="hljs-number">2</span>
+        sign_bit = sign_hash(word) % 2
 
-        <span class="hljs-keyword">if</span>(sign_bit==<span class="hljs-number">0</span>):
-            output[index] -= <span class="hljs-number">1</span>
-        <span class="hljs-keyword">else</span>:
-            output[index] += <span class="hljs-number">1</span>
+        if(sign_bit==0):
+            output[index] -= 1
+        else:
+            output[index] += 1
 
-    <span class="hljs-keyword">return</span> output
+    return output
 </code></pre>
 <p>哈希后内积的值在时间复杂度在<code>O(1/(m**0.5))</code>.所以哈希表m的大小可以根据可接受的错误来选择。在实践中，选择合适的m可能需要一些试验和错误。特征哈希可以用于涉及特征内积的模型矢量和系数，例如线性模型和核心方法。 它一直证明在垃圾邮件过滤任务中取得成功[Weinberger等，2009]。在有针对性的广告案例中，McMahan et al。 [2013年]报告不能将预测误差降低到可接受的水平，除非m的数量级为数十亿。散列特征的一个缺点是散列特征是聚合的原始特征，不再可解释。</p>
 <p>在这个例子中，我们将使用Yelp评论数据集来演示存储和,解释性使用的为sklearn的库<code>FeatureHasher</code>。在有针对性的广告案例中，McMahan</p>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
-<span class="hljs-keyword">import</span> json
+<pre><code class="lang-pythonthon">import pandas as pd
+import json
 
 js = []
-<span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">'yelp_academic_dataset_review.json'</span>) <span class="hljs-keyword">as</span> f:
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10000</span>):
+with open('yelp_academic_dataset_review.json') as f:
+    for i in range(10000):
         js.append(json.loads(f.readline()))
 
 review_df = pd.DataFrame(js)
 
-m = <span class="hljs-built_in">len</span>(review_df.business_id.unique())
+m = len(review_df.business_id.unique())
 
 &gt;&gt;&gt;m
-<span class="hljs-number">4174</span>
+4174
 
-In [<span class="hljs-number">4</span>]: <span class="hljs-keyword">from</span> sklearn.feature_extraction <span class="hljs-keyword">import</span> FeatureHasher
+In [4]: from sklearn.feature_extraction import FeatureHasher
    ...: 
-   ...: h = FeatureHasher(n_features=m, input_type=<span class="hljs-string">'string'</span>)
+   ...: h = FeatureHasher(n_features=m, input_type='string')
    ...: 
-   ...: f = h.transform(review_df[<span class="hljs-string">'business_id'</span>])
+   ...: f = h.transform(review_df['business_id'])
    ...: 
 
-In [<span class="hljs-number">5</span>]: review_df[<span class="hljs-string">'business_id'</span>].unique().tolist()[<span class="hljs-number">0</span>:<span class="hljs-number">5</span>]
-Out[<span class="hljs-number">5</span>]: 
-[<span class="hljs-string">'9yKzy9PApeiPPOUJEtnvkg'</span>,
- <span class="hljs-string">'ZRJwVLyzEJq1VAihDhYiow'</span>,
- <span class="hljs-string">'6oRAC4uyJCsJl1X0WZpVSA'</span>,
- <span class="hljs-string">'_1QQZuf4zZOyFCvXc0o6Vg'</span>,
- <span class="hljs-string">'6ozycU1RpktNG2-1BroVtw'</span>]
+In [5]: review_df['business_id'].unique().tolist()[0:5]
+Out[5]: 
+['9yKzy9PApeiPPOUJEtnvkg',
+ 'ZRJwVLyzEJq1VAihDhYiow',
+ '6oRAC4uyJCsJl1X0WZpVSA',
+ '_1QQZuf4zZOyFCvXc0o6Vg',
+ '6ozycU1RpktNG2-1BroVtw']
 
 
-In [<span class="hljs-number">6</span>]: f.toarray()
-Out[<span class="hljs-number">6</span>]: 
-array([[ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>, ...,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>],
-       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>, ...,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>],
-       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>, ...,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>],
+In [6]: f.toarray()
+Out[6]: 
+array([[ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.],
        ..., 
-       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>, ...,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>],
-       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>, ...,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>],
-       [ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>, ...,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</span>]])
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.]])
 </code></pre>
 <p>我们看看特征的存储</p>
-<pre><code class="lang-python"><span class="hljs-built_in">print</span>(<span class="hljs-string">'Our pandas Series, in bytes: '</span>, getsizeof(review_df[<span class="hljs-string">'business_id'</span>]))
-<span class="hljs-built_in">print</span>(<span class="hljs-string">'Our hashed numpy array, in bytes: '</span>, getsizeof(f))
+<pre><code class="lang-pythonthon">print('Our pandas Series, in bytes: ', getsizeof(review_df['business_id']))
+print('Our hashed numpy array, in bytes: ', getsizeof(f))
 
-&gt;&gt;&gt;<span class="hljs-number">790104</span>
-&gt;&gt;&gt;<span class="hljs-number">56</span>
+&gt;&gt;&gt;790104
+&gt;&gt;&gt;56
 </code></pre>
 <p>我们可以清楚地看到如何使用特征散列会以计算方式使我们受益，牺牲直接的用户解释能力。 这是一个容易的权衡来接受何时从数据探索和可视化发展到机器学习管道对于大型数据集。</p>
 <h2 id="bin-counting">bin-counting</h2>
@@ -697,52 +697,52 @@ array([[ <span class="hljs-number">0.</span>,  <span class="hljs-number">0.</spa
 </ul>
 <p>Avazu竞赛使用广告数据来预测点击率，但我们将使用它来演示如何bin计数可以大大减少大的特征空间流数据量。</p>
 <p>例子5-6 Bin-counting例子</p>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
-<span class="hljs-comment">#读取前面的10k行</span>
-df = pd.read_csv(<span class="hljs-string">'data/train_subset.csv'</span>)
-<span class="hljs-comment">#有多少独立的特征</span>
-<span class="hljs-built_in">len</span>(df[<span class="hljs-string">'device_id'</span>].unique())
-<span class="hljs-comment">#对于每一个类别，我们想计算</span>
-<span class="hljs-comment"># Theta = [counts, p(click), p(no click), p(click)/p(no click)]</span>
+<pre><code class="lang-pythonthon">import pandas as pd
+#读取前面的10k行
+df = pd.read_csv('data/train_subset.csv')
+#有多少独立的特征
+len(df['device_id'].unique())
+#对于每一个类别，我们想计算
+# Theta = [counts, p(click), p(no click), p(click)/p(no click)]
 
-<span class="hljs-keyword">def</span> <span class="hljs-title function_">click_counting</span>(<span class="hljs-params">x, bin_column</span>):
-          clicks = pd.Series(x[x[<span class="hljs-string">'click'</span>] &gt; <span class="hljs-number">0</span>][bin_column].value_counts(),
-name=<span class="hljs-string">'clicks'</span>)
-          no_clicks = pd.Series(x[x[<span class="hljs-string">'click'</span>] &lt; <span class="hljs-number">1</span>][bin_column].value_counts(),
-name=<span class="hljs-string">'no_clicks'</span>)
-          counts = pd.DataFrame([clicks,no_clicks]).T.fillna(<span class="hljs-string">'0'</span>)
-          counts[<span class="hljs-string">'total_clicks'</span>] = counts[<span class="hljs-string">'clicks'</span>].astype(<span class="hljs-string">'int64'</span>) +
-counts[<span class="hljs-string">'no_clicks'</span>].astype(<span class="hljs-string">'int64'</span>)
-          <span class="hljs-keyword">return</span> counts
-
-
-<span class="hljs-keyword">def</span> <span class="hljs-title function_">bin_counting</span>(<span class="hljs-params">counts</span>):
-          counts[<span class="hljs-string">'N+'</span>] =
-counts[<span class="hljs-string">'clicks'</span>].astype(<span class="hljs-string">'int64'</span>).divide(counts[<span class="hljs-string">'total_clicks'</span>].astype(<span class="hljs-string">'int64'</span>))
-          counts[<span class="hljs-string">'N-'</span>] =
-counts[<span class="hljs-string">'no_clicks'</span>].astype(<span class="hljs-string">'int64'</span>).divide(counts[<span class="hljs-string">'total_clicks'</span>].astype(<span class="hljs-string">'int64'</span>))
-          counts[<span class="hljs-string">'log_N+'</span>] = counts[<span class="hljs-string">'N+'</span>].divide(counts[<span class="hljs-string">'N-'</span>])
+def click_counting(x, bin_column):
+          clicks = pd.Series(x[x['click'] &gt; 0][bin_column].value_counts(),
+name='clicks')
+          no_clicks = pd.Series(x[x['click'] &lt; 1][bin_column].value_counts(),
+name='no_clicks')
+          counts = pd.DataFrame([clicks,no_clicks]).T.fillna('0')
+          counts['total_clicks'] = counts['clicks'].astype('int64') +
+counts['no_clicks'].astype('int64')
+          return counts
 
 
-bin_column = <span class="hljs-string">'device_id'</span>
-device_clicks = click_counting(df.<span class="hljs-built_in">filter</span>(items= [bin_column, <span class="hljs-string">'click'</span>]),
+def bin_counting(counts):
+          counts['N+'] =
+counts['clicks'].astype('int64').divide(counts['total_clicks'].astype('int64'))
+          counts['N-'] =
+counts['no_clicks'].astype('int64').divide(counts['total_clicks'].astype('int64'))
+          counts['log_N+'] = counts['N+'].divide(counts['N-'])
+
+
+bin_column = 'device_id'
+device_clicks = click_counting(df.filter(items= [bin_column, 'click']),
 bin_column)
 
 device_all, device_bin_counts = bin_counting(device_clicks)
 
-device_all.sort_values(by = <span class="hljs-string">'total_clicks'</span>, ascending=<span class="hljs-literal">False</span>).head(<span class="hljs-number">4</span>)
+device_all.sort_values(by = 'total_clicks', ascending=False).head(4)
 
        clicks  no_clicks  total  N+        N-        log_N+
-a99f214a <span class="hljs-number">15729</span>   <span class="hljs-number">71206</span>      <span class="hljs-number">86935</span>  <span class="hljs-number">0.180928</span>  <span class="hljs-number">0.819072</span>  <span class="hljs-number">0.220894</span>
-c357dbff <span class="hljs-number">33</span>
-31da1bd0 <span class="hljs-number">0</span>
-936e92fb <span class="hljs-number">5</span>
-<span class="hljs-number">134</span>        <span class="hljs-number">167</span>
-<span class="hljs-number">62</span>         <span class="hljs-number">62</span>
-<span class="hljs-number">54</span>         <span class="hljs-number">59</span>
-<span class="hljs-number">0.197605</span>  <span class="hljs-number">0.802395</span>  <span class="hljs-number">0.246269</span>
-<span class="hljs-number">0.000000</span>  <span class="hljs-number">1.000000</span>  <span class="hljs-number">0.000000</span>
-<span class="hljs-number">0.084746</span>  <span class="hljs-number">0.915254</span>  <span class="hljs-number">0.092593</span>
+a99f214a 15729   71206      86935  0.180928  0.819072  0.220894
+c357dbff 33
+31da1bd0 0
+936e92fb 5
+134        167
+62         62
+54         59
+0.197605  0.802395  0.246269
+0.000000  1.000000  0.000000
+0.084746  0.915254  0.092593
 </code></pre>
 <h2 id="关于稀有类别">关于稀有类别</h2>
 <p>就像罕见的词，罕见的类别需要特殊的处理。 想想一个用户每年登录一次：几乎没有数据可以可靠估计她广告的点击率。 而且，稀有类别会在计数表中浪费空间。解决这个问题的一种方法是通过补偿，一种积累的简单技术一个特殊垃圾箱中所有稀有类别的数量。 如果计数大于a一定的门槛，那么这个类别就有自己的统计数字。 否则，使用来自回退箱的统计数据。 这基本上会恢复单个的统计信息罕见类别与所有罕见类别的统计数据进行比较。 当使用back-off方法，它有助于为统计信息添加二进制指标来自后退箱。</p>
@@ -858,7 +858,7 @@ c357dbff <span class="hljs-number">33</span>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"五、类别特征：机器鸡时代的鸡蛋计数","level":"1.6","depth":1,"next":{"title":"六、降维：使用 PCA 压缩数据集","level":"1.7","depth":1,"path":"6.降维：用_PCA_压缩数据集.md","ref":"./6.降维：用_PCA_压缩数据集.md","articles":[]},"previous":{"title":"四、特征缩放的效果：从词袋到 TF-IDF","level":"1.5","depth":1,"path":"4.特征缩放的效果：从词袋到_TF-IDF.md","ref":"./4.特征缩放的效果：从词袋到_TF-IDF.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"5.类别特征.md","mtime":"2024-08-24T12:46:14.071Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-08-24T12:50:39.023Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"五、类别特征：机器鸡时代的鸡蛋计数","level":"1.6","depth":1,"next":{"title":"六、降维：使用 PCA 压缩数据集","level":"1.7","depth":1,"path":"6.降维：用_PCA_压缩数据集.md","ref":"./6.降维：用_PCA_压缩数据集.md","articles":[]},"previous":{"title":"四、特征缩放的效果：从词袋到 TF-IDF","level":"1.5","depth":1,"path":"4.特征缩放的效果：从词袋到_TF-IDF.md","ref":"./4.特征缩放的效果：从词袋到_TF-IDF.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"5.类别特征.md","mtime":"2025-01-05T17:59:25.889Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-05T17:59:35.861Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

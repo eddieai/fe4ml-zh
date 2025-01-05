@@ -6,7 +6,7 @@
         <title>四、特征缩放的效果：从词袋到 TF-IDF · HonKit</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="HonKit 5.1.4">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -49,7 +49,7 @@
     
     
     <meta name="HandheldFriendly" content="true"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
@@ -306,33 +306,34 @@
 <p>Tf-idf通过乘以一个常量来转换字数统计特性。因此，它是特征缩放的一个例子，这是第2章介绍的一个概念。特征缩放在实践中效果有多好？ 我们来比较简单文本分类任务中缩放和未缩放特征的表现。 coding时间到！</p>
 <p>本次实践， 我们依旧采用了Yelp评论数据集。Yelp数据集挑战赛第6轮包含在美国六个城市将近一百六十万商业评论。</p>
 <h3 id="样例4-1：使用python加载和清洗yelp评论数据集">样例4-1：使用python加载和清洗Yelp评论数据集</h3>
-<pre><code>import json
-import pandas as pd
-## Load Yelp Business data
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-comment">## Load Yelp Business data</span>
 biz_f =
-open('data/yelp/v6/yelp_dataset_challenge_academic_dataset/yelp_academic_datase
-ess.json')
-biz_df = pd.DataFrame([json.loads(x) for x in biz_f.readlines()])
+<span class="hljs-built_in">open</span>(<span class="hljs-string">'data/yelp/v6/yelp_dataset_challenge_academic_dataset/yelp_academic_datase
+ess.json'</span>)
+biz_df = pd.DataFrame([json.loads(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> biz_f.readlines()])
 biz_f.close()
-## Load Yelp Reviews data
-review_file = open('data/yelp/v6/yelp_dataset_challenge_academic_dataset/yelp_academic_dataset_review.json')
-review_df = pd.DataFrame([json.loads(x) for x in review_file.readlines()])
+<span class="hljs-comment">## Load Yelp Reviews data</span>
+review_file = <span class="hljs-built_in">open</span>(<span class="hljs-string">'data/yelp/v6/yelp_dataset_challenge_academic_dataset/yelp_academic_dataset_review.json'</span>)
+review_df = pd.DataFrame([json.loads(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> review_file.readlines()])
 review_file.close()
-# Pull out only Nightlife and Restaurants businesses
-two_biz = biz_df[biz_df.apply(lambda x: 'Nightlife' in x['categories']
-                            or 'Restaurants' in x['categories'],axis=1)]
-# Join with the reviews to get all reviews on the two types of business
-twobiz_reviews = two_biz.merge(review_df, on='business_id', how='inner')
-# Trim away the features we won't use
-twobiz_reviews = twobiz_reviews[['business_id',
-                        'name',
-                        'stars_y',
-                        'text',
-                        'categories']]
-# Create the target column--True for Nightlife businesses, and False otherwise
-two_biz_reviews['target'] = twobiz_reviews.apply(lambda x: 'Nightlife' in
-                                                     x['categories'],axis=1)
-</code></pre><h2 id="建立分类数据集">建立分类数据集</h2>
+<span class="hljs-comment"># Pull out only Nightlife and Restaurants businesses</span>
+two_biz = biz_df[biz_df.apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-string">'Nightlife'</span> <span class="hljs-keyword">in</span> x[<span class="hljs-string">'categories'</span>]
+                            <span class="hljs-keyword">or</span> <span class="hljs-string">'Restaurants'</span> <span class="hljs-keyword">in</span> x[<span class="hljs-string">'categories'</span>],axis=<span class="hljs-number">1</span>)]
+<span class="hljs-comment"># Join with the reviews to get all reviews on the two types of business</span>
+twobiz_reviews = two_biz.merge(review_df, on=<span class="hljs-string">'business_id'</span>, how=<span class="hljs-string">'inner'</span>)
+<span class="hljs-comment"># Trim away the features we won't use</span>
+twobiz_reviews = twobiz_reviews[[<span class="hljs-string">'business_id'</span>,
+                        <span class="hljs-string">'name'</span>,
+                        <span class="hljs-string">'stars_y'</span>,
+                        <span class="hljs-string">'text'</span>,
+                        <span class="hljs-string">'categories'</span>]]
+<span class="hljs-comment"># Create the target column--True for Nightlife businesses, and False otherwise</span>
+two_biz_reviews[<span class="hljs-string">'target'</span>] = twobiz_reviews.apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-string">'Nightlife'</span> <span class="hljs-keyword">in</span>
+                                                     x[<span class="hljs-string">'categories'</span>],axis=<span class="hljs-number">1</span>)
+</code></pre>
+<h2 id="建立分类数据集">建立分类数据集</h2>
 <p>让我们看看是否可以使用评论来区分餐厅或夜生活场所。为了节省训练时间，仅使用一部分评论。这两个类别之间的评论数目有很大差异。这是所谓的类不平衡数据集。对于构建模型来说，不平衡的数据集存在着一个问题:这个模型会把大部分精力花费在比重更大的类上。由于我们在这两个类别都有大量的数据，解决这个问题的一个比较好方法是将数目较大的类（餐厅）进行下采样，使之与数目较小的类（夜生活）数目大致相同。下面是一个示例工作流程。</p>
 <ol>
 <li><p>随机抽取10%夜生活场所评论以及2.1%的餐厅评论（选取合适的百分比使得每个种类的数目大致一样）</p>
@@ -343,44 +344,46 @@ two_biz_reviews['target'] = twobiz_reviews.apply(lambda x: 'Nightlife' in
 </li>
 </ol>
 <h3 id="样例4-2：创建一个分类数据集">样例4-2：创建一个分类数据集</h3>
-<pre><code># Create a class-balanced subsample to play with
-nightlife = twobiz_reviews[twobiz_reviews.apply(lambda x: 'Nightlife' in
-                                    x['categories'], axis=1)]
-restaurants = twobiz_reviews[twobiz_reviews.apply(lambda x: 'Restaurants' in
-                                    x['categories'], axis=1)]
-nightlife_subset = nightlife.sample(frac=0.1, random_state=123)
-restaurant_subset = restaurants.sample(frac=0.021, random_state=123)
+<pre><code class="lang-python"><span class="hljs-comment"># Create a class-balanced subsample to play with</span>
+nightlife = twobiz_reviews[twobiz_reviews.apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-string">'Nightlife'</span> <span class="hljs-keyword">in</span>
+                                    x[<span class="hljs-string">'categories'</span>], axis=<span class="hljs-number">1</span>)]
+restaurants = twobiz_reviews[twobiz_reviews.apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-string">'Restaurants'</span> <span class="hljs-keyword">in</span>
+                                    x[<span class="hljs-string">'categories'</span>], axis=<span class="hljs-number">1</span>)]
+nightlife_subset = nightlife.sample(frac=<span class="hljs-number">0.1</span>, random_state=<span class="hljs-number">123</span>)
+restaurant_subset = restaurants.sample(frac=<span class="hljs-number">0.021</span>, random_state=<span class="hljs-number">123</span>)
 combined = pd.concat([nightlife_subset, restaurant_subset])
-# Split into training and test data sets
+<span class="hljs-comment"># Split into training and test data sets</span>
 training_data, test_data = modsel.train_test_split(combined,
-                                  train_size=0.7,
-                                  random_state=123)
+                                  train_size=<span class="hljs-number">0.7</span>,
+                                  random_state=<span class="hljs-number">123</span>)
 training_data.shape
-# (29264, 5)
+<span class="hljs-comment"># (29264, 5)</span>
 test_data.shape
-# (12542, 5)
-</code></pre><h2 id="用tf-idf转换缩放词袋">用tf-idf转换缩放词袋</h2>
+<span class="hljs-comment"># (12542, 5)</span>
+</code></pre>
+<h2 id="用tf-idf转换缩放词袋">用tf-idf转换缩放词袋</h2>
 <p>这个实验的目标是比较词袋，tf-idf以及L2归一化对于线性分类的作用。注意，做tf-idf接着做L2归一化和单独做L2归一化是一样的。所以我们需要只需要3个特征集合：词袋，tf-idf，以及逐词进行L2归一化后的词袋。</p>
 <p>在这个例子中，我们将使用Scikit-learn的CountVectorizer将评论文本转化为词袋。所有的文本特征化方法都依赖于标记器（tokenizer），该标记器能够将文本字符串转换为标记（词）列表。在这个例子中，Scikit-learn的默认标记模式是查找2个或更多字母数字字符的序列。标点符号被视为标记分隔符。</p>
 <h2 id="测试集上进行特征缩放">测试集上进行特征缩放</h2>
 <p>特征缩放的一个细微之处是它需要了解我们在实践中很可能不知道的特征统计，例如均值，方差，文档频率，L2范数等。为了计算tf-idf表示，我们不得不根据训练数据计算逆文档频率，并使用这些统计量来调整训练和测试数据。在Scikit-learn中，将特征变换拟合到训练集上相当于收集相关统计数据。然后可以将拟合过的变换应用于测试数据。</p>
 <h3 id="样例4-3：特征变换">样例4-3：特征变换</h3>
-<pre><code># Represent the review text as a bag-of-words
+<pre><code class="lang-python"><span class="hljs-comment"># Represent the review text as a bag-of-words</span>
 bow_transform = text.CountVectorizer()
-X_tr_bow = bow_transform.fit_transform(training_data['text'])
-X_te_bow = bow_transform.transform(test_data['text'])
-len(bow_transform.vocabulary_)
-# 46924
-y_tr = training_data['target']
-y_te = test_data['target']
-# Create the tf-idf representation using the bag-of-words matrix
-tfidf_trfm = text.TfidfTransformer(norm=None)
+X_tr_bow = bow_transform.fit_transform(training_data[<span class="hljs-string">'text'</span>])
+X_te_bow = bow_transform.transform(test_data[<span class="hljs-string">'text'</span>])
+<span class="hljs-built_in">len</span>(bow_transform.vocabulary_)
+<span class="hljs-comment"># 46924</span>
+y_tr = training_data[<span class="hljs-string">'target'</span>]
+y_te = test_data[<span class="hljs-string">'target'</span>]
+<span class="hljs-comment"># Create the tf-idf representation using the bag-of-words matrix</span>
+tfidf_trfm = text.TfidfTransformer(norm=<span class="hljs-literal">None</span>)
 X_tr_tfidf = tfidf_trfm.fit_transform(X_tr_bow)
 X_te_tfidf = tfidf_trfm.transform(X_te_bow)
-# Just for kicks, l2-normalize the bag-of-words representation
-X_tr_l2 = preproc.normalize(X_tr_bow, axis=0)
-X_te_l2 = preproc.normalize(X_te_bow, axis=0)
-</code></pre><p>当我们使用训练统计来衡量测试数据时，结果看起来有点模糊。测试集上的最小-最大比例缩放不再整齐地映射到零和一。L2范数，平均数和方差统计数据都将显得有些偏离。这比缺少数据的问题好一点。例如，测试集可能包含训练数据中不存在的单词，并且对于新的单词没有相应的文档频。通常的解决方案是简单地将测试集中新的单词丢弃。这似乎是不负责任的，但训练集上的模型在任何情况下都不会知道如何处理新词。一种稍微不太好的方法是明确地学习一个“垃圾”单词，并将所有罕见的频率单词映射到它，即使在训练集中也是如此，正如“罕见词汇”中所讨论的那样。</p>
+<span class="hljs-comment"># Just for kicks, l2-normalize the bag-of-words representation</span>
+X_tr_l2 = preproc.normalize(X_tr_bow, axis=<span class="hljs-number">0</span>)
+X_te_l2 = preproc.normalize(X_te_bow, axis=<span class="hljs-number">0</span>)
+</code></pre>
+<p>当我们使用训练统计来衡量测试数据时，结果看起来有点模糊。测试集上的最小-最大比例缩放不再整齐地映射到零和一。L2范数，平均数和方差统计数据都将显得有些偏离。这比缺少数据的问题好一点。例如，测试集可能包含训练数据中不存在的单词，并且对于新的单词没有相应的文档频。通常的解决方案是简单地将测试集中新的单词丢弃。这似乎是不负责任的，但训练集上的模型在任何情况下都不会知道如何处理新词。一种稍微不太好的方法是明确地学习一个“垃圾”单词，并将所有罕见的频率单词映射到它，即使在训练集中也是如此，正如“罕见词汇”中所讨论的那样。</p>
 <h2 id="使用逻辑回归进行分类">使用逻辑回归进行分类</h2>
 <p>逻辑回归是一个简单的线性分类器。通过对输入特征的加权组合，输入到一个sigmoid函数。sigmoid函数将任何实数平滑的映射到介于0和1之间。如图4-3绘制sigmoid函数曲线。由于逻辑回归比较简单，因此它通常是最先接触的分类器。</p>
 <p><img src="images/chapter4/4-3.png" alt="Figure 4-3: sigmoid函数"></img></p>
@@ -388,19 +391,20 @@ X_te_l2 = preproc.normalize(X_te_bow, axis=0)
 
 <p>图4-3是sigmoid函数的插图。该函数将输入的实数x转换为一个0到1之间的数。它有一组参数w，表示围绕中点0.5增加的斜率。截距项b表示函数输出穿过中点的输入值。如果sigmoid输出大于0.5，则逻辑分类器将预测为正例，否则为反例。通过改变w和b，可以控制决策的改变，以及决策响应该点周围输入值变化的速度。</p>
 <h3 id="样例4-4：使用默认参数训练逻辑回归分类器">样例4-4：使用默认参数训练逻辑回归分类器</h3>
-<pre><code>def simple_logistic_classify(X_tr, y_tr, X_test, y_test, description):
-## Helper function to train a logistic classifier and score on test data
+<pre><code class="lang-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">simple_logistic_classify</span>(<span class="hljs-params">X_tr, y_tr, X_test, y_test, description</span>):
+<span class="hljs-comment">## Helper function to train a logistic classifier and score on test data</span>
 m = LogisticRegression().fit(X_tr, y_tr)
 s = m.score(X_test, y_test)
-print ('Test score with', description, 'features:', s)
-return m
-m1 = simple_logistic_classify(X_tr_bow, y_tr, X_te_bow, y_te, 'bow')
-m2 = simple_logistic_classify(X_tr_l2, y_tr, X_te_l2, y_te, 'l2-normalized')
-m3 = simple_logistic_classify(X_tr_tfidf, y_tr, X_te_tfidf, y_te, 'tf-idf')
-# Test score with bow features: 0.775873066497
-# Test score with l2-normalized features: 0.763514590974
-# Test score with tf-idf features: 0.743182905438
-</code></pre><p>矛盾的是，结果表明最准确的分类器是使用BOW特征的分类器。出乎意料我们之外。事实证明，造成这种情况的原因是没有很好地“调整”分类器，这是比较分类器时一个常见的错误。</p>
+<span class="hljs-built_in">print</span> (<span class="hljs-string">'Test score with'</span>, description, <span class="hljs-string">'features:'</span>, s)
+<span class="hljs-keyword">return</span> m
+m1 = simple_logistic_classify(X_tr_bow, y_tr, X_te_bow, y_te, <span class="hljs-string">'bow'</span>)
+m2 = simple_logistic_classify(X_tr_l2, y_tr, X_te_l2, y_te, <span class="hljs-string">'l2-normalized'</span>)
+m3 = simple_logistic_classify(X_tr_tfidf, y_tr, X_te_tfidf, y_te, <span class="hljs-string">'tf-idf'</span>)
+<span class="hljs-comment"># Test score with bow features: 0.775873066497</span>
+<span class="hljs-comment"># Test score with l2-normalized features: 0.763514590974</span>
+<span class="hljs-comment"># Test score with tf-idf features: 0.743182905438</span>
+</code></pre>
+<p>矛盾的是，结果表明最准确的分类器是使用BOW特征的分类器。出乎意料我们之外。事实证明，造成这种情况的原因是没有很好地“调整”分类器，这是比较分类器时一个常见的错误。</p>
 <h2 id="使用正则化调整逻辑回归">使用正则化调整逻辑回归</h2>
 <p>逻辑回归有些华而不实。 当特征的数量大于数据点的数量时，找到最佳模型的问题被认为是欠定的。 解决这个问题的一种方法是在训练过程中增加额外的约束条件。 这就是所谓的正则化，技术细节将在下一节讨论。</p>
 <p>逻辑回归的大多数实现允许正则化。为了使用这个功能，必须指定一个正则化参数。正则化参数是在模型训练过程中未自动学习的超参数。相反，他们必须手动进行调整，并将其提供给训练算法。这个过程称为超参数调整。（有关如何评估机器学习模型的详细信息，请参阅评估机器学习模型（Evaluating Machine Learning Models））.调整超参数的一种基本方法称为网格搜索：指定一个超参数值网格，并且调谐器以编程方式在网格中搜索最佳超参数设置 格。 找到最佳超参数设置后，使用该设置对整个训练集进行训练，并比较测试集上这些同类最佳模型的性能。</p>
@@ -436,101 +440,102 @@ m3 = simple_logistic_classify(X_tr_tfidf, y_tr, X_te_tfidf, y_te, 'tf-idf')
 <h3 id="通过重采样估计方差">通过重采样估计方差</h3>
 <p>现代统计方法假设底层数据是随机分布的。 数据导出模型的性能测量也受到随机噪声的影响。 在这种情况下，基于相似数据的数据集，不止一次进行测量总是比较好的。 这给了我们一个测量的置信区间。 K折交叉验证就是这样一种策略。 重采样是另一种从相同底层数据集生成多个小样本的技术。 有关重采样的更多详细信息，请参见评估机器学习模型。</p>
 <h3 id="样例4-5：使用网格搜索调整逻辑回归超参数">样例4-5：使用网格搜索调整逻辑回归超参数</h3>
-<pre><code>&gt;&gt;&gt; import sklearn.model_selection as modsel# Specify a search grid, then do 5-fold grid search for each of the feature sets
-&gt;&gt;&gt; param_grid_ = {'C': [1e-5, 1e-3, 1e-1, 1e0, 1e1, 1e2]# Tune classifier for bag-of-words representation
-&gt;&gt;&gt; bow_search = modsel.GridSearchCV(LogisticRegression(), cv=5,
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> sklearn.model_selection <span class="hljs-keyword">as</span> modsel<span class="hljs-comment"># Specify a search grid, then do 5-fold grid search for each of the feature sets</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>param_grid_ = {<span class="hljs-string">'C'</span>: [<span class="hljs-number">1e-5</span>, <span class="hljs-number">1e-3</span>, <span class="hljs-number">1e-1</span>, <span class="hljs-number">1e0</span>, <span class="hljs-number">1e1</span>, <span class="hljs-number">1e2</span>]<span class="hljs-comment"># Tune classifier for bag-of-words representation</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>bow_search = modsel.GridSearchCV(LogisticRegression(), cv=<span class="hljs-number">5</span>,
 param_grid=param_grid_)
-&gt;&gt;&gt; bow_search.fit(X_tr_bow, y_tr)# Tune classifier for L2-normalized word vector
-&gt;&gt;&gt; l2_search = modsel.GridSearchCV(LogisticRegression(), cv=5,
+<span class="hljs-meta">&gt;&gt;&gt; </span>bow_search.fit(X_tr_bow, y_tr)<span class="hljs-comment"># Tune classifier for L2-normalized word vector</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>l2_search = modsel.GridSearchCV(LogisticRegression(), cv=<span class="hljs-number">5</span>,
 param_grid=param_grid_)
-&gt;&gt;&gt; l2_search.fit(X_tr_l2, y_tr)# Tune classifier for tf-idf
-&gt;&gt;&gt; tfidf_search = modsel.GridSearchCV(LogisticRegression(), cv=5,
+<span class="hljs-meta">&gt;&gt;&gt; </span>l2_search.fit(X_tr_l2, y_tr)<span class="hljs-comment"># Tune classifier for tf-idf</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>tfidf_search = modsel.GridSearchCV(LogisticRegression(), cv=<span class="hljs-number">5</span>,
 param_grid=param_grid_)
-&gt;&gt;&gt; tfidf_search.fit(X_tr_tfidf, y_tr)
-# Let's check out one of the grid search outputs to see how it went
-&gt;&gt;&gt; bow_search.cv_results_{'mean_fit_time':
-array([ 0.43648252, 0.94630651, 5.64090128, 15.31248307,
-31.47010217, 42.44257565]),
-'mean_score_time':
-array([ 0.00080056, 0.00392466, 0.00864897, 0.00784755, 0.01192751,
-0.0072515 ]),
-'mean_test_score':
-array([ 0.57897075, 0.7518111 , 0.78283898, 0.77381766, 0.75515992,
-0.73937261]),
-'mean_train_score':
-array([ 0.5792185 , 0.76731652, 0.87697341, 0.94629064, 0.98357195,
-0.99441294]),
-'param_C': masked_array(data = [1e-05 0.001 0.1 1.0 10.0 100.0],
-mask = [False False False False False False],
+<span class="hljs-meta">&gt;&gt;&gt; </span>tfidf_search.fit(X_tr_tfidf, y_tr)
+<span class="hljs-comment"># Let's check out one of the grid search outputs to see how it went</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>bow_search.cv_results_{<span class="hljs-string">'mean_fit_time'</span>:
+array([ <span class="hljs-number">0.43648252</span>, <span class="hljs-number">0.94630651</span>, <span class="hljs-number">5.64090128</span>, <span class="hljs-number">15.31248307</span>,
+<span class="hljs-number">31.47010217</span>, <span class="hljs-number">42.44257565</span>]),
+<span class="hljs-string">'mean_score_time'</span>:
+array([ <span class="hljs-number">0.00080056</span>, <span class="hljs-number">0.00392466</span>, <span class="hljs-number">0.00864897</span>, <span class="hljs-number">0.00784755</span>, <span class="hljs-number">0.01192751</span>,
+<span class="hljs-number">0.0072515</span> ]),
+<span class="hljs-string">'mean_test_score'</span>:
+array([ <span class="hljs-number">0.57897075</span>, <span class="hljs-number">0.7518111</span> , <span class="hljs-number">0.78283898</span>, <span class="hljs-number">0.77381766</span>, <span class="hljs-number">0.75515992</span>,
+<span class="hljs-number">0.73937261</span>]),
+<span class="hljs-string">'mean_train_score'</span>:
+array([ <span class="hljs-number">0.5792185</span> , <span class="hljs-number">0.76731652</span>, <span class="hljs-number">0.87697341</span>, <span class="hljs-number">0.94629064</span>, <span class="hljs-number">0.98357195</span>,
+<span class="hljs-number">0.99441294</span>]),
+<span class="hljs-string">'param_C'</span>: masked_array(data = [<span class="hljs-number">1e-05</span> <span class="hljs-number">0.001</span> <span class="hljs-number">0.1</span> <span class="hljs-number">1.0</span> <span class="hljs-number">10.0</span> <span class="hljs-number">100.0</span>],
+mask = [<span class="hljs-literal">False</span> <span class="hljs-literal">False</span> <span class="hljs-literal">False</span> <span class="hljs-literal">False</span> <span class="hljs-literal">False</span> <span class="hljs-literal">False</span>],
 fill_value = ?),
-'params': ({'C': 1e-05},
-        {'C': 0.001},
-        {'C': 0.1},
-        {'C': 1.0},
-        {'C': 10.0},
-        {'C': 100.0}),
-'rank_test_score': array([6, 4, 1, 2, 3, 5]),
-'split0_test_score':
-array([ 0.58028698, 0.75025624, 0.7799795 , 0.7726341 , 0.75247694,
-0.74086095]),
-'split0_train_score':
-array([ 0.57923964, 0.76860316, 0.87560871, 0.94434003, 0.9819308 ,
-0.99470312]),
-'split1_test_score':
-array([ 0.5786776 , 0.74628396, 0.77669571, 0.76627371, 0.74867589,
-0.73176149]),
-'split1_train_score':
-array([ 0.57917218, 0.7684849 , 0.87945837, 0.94822946, 0.98504976,
-0.99538678]),
-'split2_test_score':
-array([ 0.57816504, 0.75533914, 0.78472578, 0.76832394, 0.74799248,
-0.7356911 ]),
-'split2_train_score':
-array([ 0.57977019, 0.76613558, 0.87689548, 0.94566657, 0.98368288,
-0.99397719]),
-'split3_test_score':
-array([ 0.57894737, 0.75051265, 0.78332194, 0.77682843, 0.75768968,
-0.73855092]),
-'split3_train_score':
-array([ 0.57914745, 0.76678626, 0.87634546, 0.94558346, 0.98385443,
-0.99474628]),
-'split4_test_score':
-array([ 0.57877649, 0.75666439, 0.78947368, 0.78503076, 0.76896787,
-0.75 ]),
-'split4_train_score':
-array([ 0.57876303, 0.7665727 , 0.87655903, 0.94763369, 0.98334188,
-0.99325132]),
-'std_fit_time':
-array([ 0.03874582, 0.02297261, 1.18862097, 1.83901079, 4.21516797,
-2.93444269]),
-'std_score_time':
-array([ 0.00160112, 0.00605009, 0.00623053, 0.00698687, 0.00713112,
-0.00570195]),
-'std_test_score':
-array([ 0.00070799, 0.00375907, 0.00432957, 0.00668246, 0.00771557,
-0.00612049]),
-'std_train_score':
-array([ 0.00032232, 0.00102466, 0.00131222, 0.00143229, 0.00100223,
-0.00073252])}
-########
-# Plot the cross validation results in a box-and-whiskers plot to
-# visualize and compare classifier performance
-########
-&gt;&gt;&gt; search_results = pd.DataFrame.from_dict({'bow':
-bow_search.cv_results_['mean_test_score'],
-'tfidf':
-tfidf_search.cv_results_['mean_test_score'],
-'l2':
-l2_search.cv_results_['mean_test_score']})
-# Our usual matplotlib incantations. Seaborn is used here to make
-# the plot pretty
-&gt;&gt;&gt; import matplotlib.pyplot as plt
-&gt;&gt;&gt; import seaborn as sns
-&gt;&gt;&gt; sns.set_style("whitegrid")
-&gt;&gt;&gt; ax = sns.boxplot(data=search_results, width=0.4)
-&gt;&gt;&gt; ax.set_ylabel('Accuracy', size=14)
-&gt;&gt;&gt; ax.tick_params(labelsize=14)
-</code></pre><p><img src="images/chapter4/4-4.png" alt="Figure 4-4: 分类器精度在每个特征集和正则化设置下的分布。 准确度是以5折交叉验证的平均准确度来衡量的"></img></p>
+<span class="hljs-string">'params'</span>: ({<span class="hljs-string">'C'</span>: <span class="hljs-number">1e-05</span>},
+        {<span class="hljs-string">'C'</span>: <span class="hljs-number">0.001</span>},
+        {<span class="hljs-string">'C'</span>: <span class="hljs-number">0.1</span>},
+        {<span class="hljs-string">'C'</span>: <span class="hljs-number">1.0</span>},
+        {<span class="hljs-string">'C'</span>: <span class="hljs-number">10.0</span>},
+        {<span class="hljs-string">'C'</span>: <span class="hljs-number">100.0</span>}),
+<span class="hljs-string">'rank_test_score'</span>: array([<span class="hljs-number">6</span>, <span class="hljs-number">4</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>]),
+<span class="hljs-string">'split0_test_score'</span>:
+array([ <span class="hljs-number">0.58028698</span>, <span class="hljs-number">0.75025624</span>, <span class="hljs-number">0.7799795</span> , <span class="hljs-number">0.7726341</span> , <span class="hljs-number">0.75247694</span>,
+<span class="hljs-number">0.74086095</span>]),
+<span class="hljs-string">'split0_train_score'</span>:
+array([ <span class="hljs-number">0.57923964</span>, <span class="hljs-number">0.76860316</span>, <span class="hljs-number">0.87560871</span>, <span class="hljs-number">0.94434003</span>, <span class="hljs-number">0.9819308</span> ,
+<span class="hljs-number">0.99470312</span>]),
+<span class="hljs-string">'split1_test_score'</span>:
+array([ <span class="hljs-number">0.5786776</span> , <span class="hljs-number">0.74628396</span>, <span class="hljs-number">0.77669571</span>, <span class="hljs-number">0.76627371</span>, <span class="hljs-number">0.74867589</span>,
+<span class="hljs-number">0.73176149</span>]),
+<span class="hljs-string">'split1_train_score'</span>:
+array([ <span class="hljs-number">0.57917218</span>, <span class="hljs-number">0.7684849</span> , <span class="hljs-number">0.87945837</span>, <span class="hljs-number">0.94822946</span>, <span class="hljs-number">0.98504976</span>,
+<span class="hljs-number">0.99538678</span>]),
+<span class="hljs-string">'split2_test_score'</span>:
+array([ <span class="hljs-number">0.57816504</span>, <span class="hljs-number">0.75533914</span>, <span class="hljs-number">0.78472578</span>, <span class="hljs-number">0.76832394</span>, <span class="hljs-number">0.74799248</span>,
+<span class="hljs-number">0.7356911</span> ]),
+<span class="hljs-string">'split2_train_score'</span>:
+array([ <span class="hljs-number">0.57977019</span>, <span class="hljs-number">0.76613558</span>, <span class="hljs-number">0.87689548</span>, <span class="hljs-number">0.94566657</span>, <span class="hljs-number">0.98368288</span>,
+<span class="hljs-number">0.99397719</span>]),
+<span class="hljs-string">'split3_test_score'</span>:
+array([ <span class="hljs-number">0.57894737</span>, <span class="hljs-number">0.75051265</span>, <span class="hljs-number">0.78332194</span>, <span class="hljs-number">0.77682843</span>, <span class="hljs-number">0.75768968</span>,
+<span class="hljs-number">0.73855092</span>]),
+<span class="hljs-string">'split3_train_score'</span>:
+array([ <span class="hljs-number">0.57914745</span>, <span class="hljs-number">0.76678626</span>, <span class="hljs-number">0.87634546</span>, <span class="hljs-number">0.94558346</span>, <span class="hljs-number">0.98385443</span>,
+<span class="hljs-number">0.99474628</span>]),
+<span class="hljs-string">'split4_test_score'</span>:
+array([ <span class="hljs-number">0.57877649</span>, <span class="hljs-number">0.75666439</span>, <span class="hljs-number">0.78947368</span>, <span class="hljs-number">0.78503076</span>, <span class="hljs-number">0.76896787</span>,
+<span class="hljs-number">0.75</span> ]),
+<span class="hljs-string">'split4_train_score'</span>:
+array([ <span class="hljs-number">0.57876303</span>, <span class="hljs-number">0.7665727</span> , <span class="hljs-number">0.87655903</span>, <span class="hljs-number">0.94763369</span>, <span class="hljs-number">0.98334188</span>,
+<span class="hljs-number">0.99325132</span>]),
+<span class="hljs-string">'std_fit_time'</span>:
+array([ <span class="hljs-number">0.03874582</span>, <span class="hljs-number">0.02297261</span>, <span class="hljs-number">1.18862097</span>, <span class="hljs-number">1.83901079</span>, <span class="hljs-number">4.21516797</span>,
+<span class="hljs-number">2.93444269</span>]),
+<span class="hljs-string">'std_score_time'</span>:
+array([ <span class="hljs-number">0.00160112</span>, <span class="hljs-number">0.00605009</span>, <span class="hljs-number">0.00623053</span>, <span class="hljs-number">0.00698687</span>, <span class="hljs-number">0.00713112</span>,
+<span class="hljs-number">0.00570195</span>]),
+<span class="hljs-string">'std_test_score'</span>:
+array([ <span class="hljs-number">0.00070799</span>, <span class="hljs-number">0.00375907</span>, <span class="hljs-number">0.00432957</span>, <span class="hljs-number">0.00668246</span>, <span class="hljs-number">0.00771557</span>,
+<span class="hljs-number">0.00612049</span>]),
+<span class="hljs-string">'std_train_score'</span>:
+array([ <span class="hljs-number">0.00032232</span>, <span class="hljs-number">0.00102466</span>, <span class="hljs-number">0.00131222</span>, <span class="hljs-number">0.00143229</span>, <span class="hljs-number">0.00100223</span>,
+<span class="hljs-number">0.00073252</span>])}
+<span class="hljs-comment">########</span>
+<span class="hljs-comment"># Plot the cross validation results in a box-and-whiskers plot to</span>
+<span class="hljs-comment"># visualize and compare classifier performance</span>
+<span class="hljs-comment">########</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>search_results = pd.DataFrame.from_dict({<span class="hljs-string">'bow'</span>:
+bow_search.cv_results_[<span class="hljs-string">'mean_test_score'</span>],
+<span class="hljs-string">'tfidf'</span>:
+tfidf_search.cv_results_[<span class="hljs-string">'mean_test_score'</span>],
+<span class="hljs-string">'l2'</span>:
+l2_search.cv_results_[<span class="hljs-string">'mean_test_score'</span>]})
+<span class="hljs-comment"># Our usual matplotlib incantations. Seaborn is used here to make</span>
+<span class="hljs-comment"># the plot pretty</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns
+<span class="hljs-meta">&gt;&gt;&gt; </span>sns.set_style(<span class="hljs-string">"whitegrid"</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax = sns.boxplot(data=search_results, width=<span class="hljs-number">0.4</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_ylabel(<span class="hljs-string">'Accuracy'</span>, size=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.tick_params(labelsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter4/4-4.png" alt="Figure 4-4: 分类器精度在每个特征集和正则化设置下的分布。 准确度是以5折交叉验证的平均准确度来衡量的"></img></p>
 <center><h5 id="figure-4-4-分类器精度在每个特征集和正则化设置下的分布。-准确度是以5折交叉验证的平均准确度来衡量的">Figure 4-4: 分类器精度在每个特征集和正则化设置下的分布。 准确度是以5折交叉验证的平均准确度来衡量的</h5></center>
 
 <center><h5 id="table4-2每个超参数设置的平均交叉验证分类器准确度。-星号表示最高精度">Table4-2.每个超参数设置的平均交叉验证分类器准确度。 星号表示最高精度</h5></center>
@@ -549,15 +554,16 @@ Regularization Parameter | BOW | normalized| Tf-idf
 
 <p>在图4-4中，L2归一化后的特征结果看起来非常糟糕。 但不要被蒙蔽了 。准确率低是由于正则化参数设置不恰当造成的 - 实际证明次优超参数会得到相当错误的结论。 如果我们使用每个特征集的最佳超参数设置来训练模型，则不同特征集的测试精度非常接近。</p>
 <h3 id="示例4-6：最终的训练和测试步骤来比较不同的特征集">示例4-6：最终的训练和测试步骤来比较不同的特征集</h3>
-<pre><code># Train a final model on the entire training set, using the best hyperparamete
-# settings found previously. Measure accuracy on the test set.
-&gt;&gt;&gt; m1 = simple_logistic_classify(X_tr_bow, y_tr, X_te_bow, y_te, 'bow', _C=bow_search.best_params_['C'])
-&gt;&gt;&gt; m2 = simple_logistic_classify(X_tr_l2, y_tr, X_te_l2, y_te, 'l2-normalized', _C=l2_search.best_params_['C'])
-&gt;&gt;&gt; m3 = simple_logistic_classify(X_tr_tfidf, y_tr, X_te_tfidf, y_te, 'tf-idf', _C=tfidf_search.best_params_['C'])
-Test score with bow features: 0.78360708021
-Test score with l2-normalized features: 0.780178599904
-Test score with tf-idf features: 0.788470738319
-</code></pre><center><h5 id="table4-3bow-tf-idf以及l2正则化的最终分类精度">Table4-3.BOW, Tf-Idf,以及L2正则化的最终分类精度<h5 id=""></h5></h5></center>
+<pre><code class="lang-python"><span class="hljs-comment"># Train a final model on the entire training set, using the best hyperparamete</span>
+<span class="hljs-comment"># settings found previously. Measure accuracy on the test set.</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>m1 = simple_logistic_classify(X_tr_bow, y_tr, X_te_bow, y_te, <span class="hljs-string">'bow'</span>, _C=bow_search.best_params_[<span class="hljs-string">'C'</span>])
+<span class="hljs-meta">&gt;&gt;&gt; </span>m2 = simple_logistic_classify(X_tr_l2, y_tr, X_te_l2, y_te, <span class="hljs-string">'l2-normalized'</span>, _C=l2_search.best_params_[<span class="hljs-string">'C'</span>])
+<span class="hljs-meta">&gt;&gt;&gt; </span>m3 = simple_logistic_classify(X_tr_tfidf, y_tr, X_te_tfidf, y_te, <span class="hljs-string">'tf-idf'</span>, _C=tfidf_search.best_params_[<span class="hljs-string">'C'</span>])
+Test score <span class="hljs-keyword">with</span> bow features: <span class="hljs-number">0.78360708021</span>
+Test score <span class="hljs-keyword">with</span> l2-normalized features: <span class="hljs-number">0.780178599904</span>
+Test score <span class="hljs-keyword">with</span> tf-idf features: <span class="hljs-number">0.788470738319</span>
+</code></pre>
+<center><h5 id="table4-3bow-tf-idf以及l2正则化的最终分类精度">Table4-3.BOW, Tf-Idf,以及L2正则化的最终分类精度<h5 id=""></h5></h5></center>
 
 <table>
 <thead>
@@ -655,7 +661,7 @@ Test score with tf-idf features: 0.788470738319
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"四、特征缩放的效果：从词袋到 TF-IDF","level":"1.5","depth":1,"next":{"title":"五、类别特征：机器鸡时代的鸡蛋计数","level":"1.6","depth":1,"path":"5.类别特征.md","ref":"./5.类别特征.md","articles":[]},"previous":{"title":"三、文本数据：展开、过滤和分块","level":"1.4","depth":1,"path":"3.文本数据.md","ref":"./3.文本数据.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"4.特征缩放的效果：从词袋到_TF-IDF.md","mtime":"2024-08-24T12:46:14.075Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-08-24T12:50:39.023Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"四、特征缩放的效果：从词袋到 TF-IDF","level":"1.5","depth":1,"next":{"title":"五、类别特征：机器鸡时代的鸡蛋计数","level":"1.6","depth":1,"path":"5.类别特征.md","ref":"./5.类别特征.md","articles":[]},"previous":{"title":"三、文本数据：展开、过滤和分块","level":"1.4","depth":1,"path":"3.文本数据.md","ref":"./3.文本数据.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"4.特征缩放的效果：从词袋到_TF-IDF.md","mtime":"2025-01-05T17:59:25.889Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-05T17:59:35.861Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

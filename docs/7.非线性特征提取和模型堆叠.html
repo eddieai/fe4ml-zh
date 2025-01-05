@@ -6,7 +6,7 @@
         <title>七、非线性特征提取和模型堆叠 · HonKit</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="HonKit 5.1.4">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -49,7 +49,7 @@
     
     
     <meta name="HandheldFriendly" content="true"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
@@ -298,45 +298,45 @@
 <p>图 7-2 显示了 k 均值在两个不同的随机生成数据集上的工作。（a）中的数据是由具有相同方差但不同均值的随机高斯分布生成的。（c）中的数据是随机产生的。这些问题很容易解决，k 均值做得很好。（结果可能对簇的数目敏感，数目必须给算法）。这个例子的代码如例 7-1 所示。</p>
 <p><img src="images/chapter7/7-2.png" alt="图7-2"></img></p>
 <p>例 7-1</p>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np 
-<span class="hljs-keyword">from</span> sklearn.cluster 
-<span class="hljs-keyword">import</span> KMeans <span class="hljs-keyword">from</span> sklearn.datasets 
-<span class="hljs-keyword">import</span> make_blobs 
-<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt %matplotlib notebook 
+<pre><code class="lang-pythonthon">import numpy as np 
+from sklearn.cluster 
+import KMeans from sklearn.datasets 
+import make_blobs 
+import matplotlib.pyplot as plt %matplotlib notebook 
 
-n_data = <span class="hljs-number">1000</span> 
-seed = <span class="hljs-number">1</span> 
-n_clusters = <span class="hljs-number">4</span> 
+n_data = 1000 
+seed = 1 
+n_clusters = 4 
 
-<span class="hljs-comment"># 产生高斯随机数，运行K-均值</span>
-blobs, blob_labels = make_blobs(n_samples=n_data, n_features=<span class="hljs-number">2</span>,centers=n_centers, random_state=seed) 
+# 产生高斯随机数，运行K-均值
+blobs, blob_labels = make_blobs(n_samples=n_data, n_features=2,centers=n_centers, random_state=seed) 
 
 clusters_blob = KMeans(n_clusters=n_centers, random_state=seed).fit_predict(blobs) 
 
-<span class="hljs-comment"># 产生随机数，运行K-均值</span>
-uniform = np.random.rand(n_data, <span class="hljs-number">2</span>) 
+# 产生随机数，运行K-均值
+uniform = np.random.rand(n_data, 2) 
 clusters_uniform = KMeans(n_clusters=n_clusters, random_state=seed).fit_predict(uniform) 
 
-<span class="hljs-comment"># 使用Matplotlib进行结果可视化</span>
+# 使用Matplotlib进行结果可视化
 figure = plt.figure() 
-plt.subplot(<span class="hljs-number">221</span>) 
-plt.scatter(blobs[:, <span class="hljs-number">0</span>], blobs[:, <span class="hljs-number">1</span>], c=blob_labels, cmap=<span class="hljs-string">'gist_rainbow'</span>) 
-plt.title(<span class="hljs-string">"(a) Four randomly generated blobs"</span>, fontsize=<span class="hljs-number">14</span>) 
-plt.axis(<span class="hljs-string">'off'</span>) 
+plt.subplot(221) 
+plt.scatter(blobs[:, 0], blobs[:, 1], c=blob_labels, cmap='gist_rainbow') 
+plt.title("(a) Four randomly generated blobs", fontsize=14) 
+plt.axis('off') 
 
-plt.subplot(<span class="hljs-number">222</span>) 
-plt.scatter(blobs[:, <span class="hljs-number">0</span>], blobs[:, <span class="hljs-number">1</span>], c=clusters_blob, cmap=<span class="hljs-string">'gist_rainbow'</span>) 
-plt.title(<span class="hljs-string">"(b) Clusters found via K-means"</span>, fontsize=<span class="hljs-number">14</span>) 
-plt.axis(<span class="hljs-string">'off'</span>) 
+plt.subplot(222) 
+plt.scatter(blobs[:, 0], blobs[:, 1], c=clusters_blob, cmap='gist_rainbow') 
+plt.title("(b) Clusters found via K-means", fontsize=14) 
+plt.axis('off') 
 
-plt.subplot(<span class="hljs-number">223</span>) 
-plt.scatter(uniform[:, <span class="hljs-number">0</span>], uniform[:, <span class="hljs-number">1</span>]) 
-plt.title(<span class="hljs-string">"(c) 1000 randomly generated points"</span>, fontsize=<span class="hljs-number">14</span>) 
-plt.axis(<span class="hljs-string">'off'</span>) 
+plt.subplot(223) 
+plt.scatter(uniform[:, 0], uniform[:, 1]) 
+plt.title("(c) 1000 randomly generated points", fontsize=14) 
+plt.axis('off') 
 
-plt.subplot(<span class="hljs-number">224</span>) 
-plt.scatter(uniform[:, <span class="hljs-number">0</span>], uniform[:, <span class="hljs-number">1</span>], c=clusters_uniform, cmap=<span class="hljs-string">'gist_rainbow'</span>) 
-plt.title(<span class="hljs-string">"(d) Clusters found via K-means"</span>, fontsize=<span class="hljs-number">14</span>) plt.axis(<span class="hljs-string">'off'</span>)
+plt.subplot(224) 
+plt.scatter(uniform[:, 0], uniform[:, 1], c=clusters_uniform, cmap='gist_rainbow') 
+plt.title("(d) Clusters found via K-means", fontsize=14) plt.axis('off')
 </code></pre>
 <p><img src="images/chapter7/7-2.png" alt="图7-2"></img></p>
 <h2 id="曲面拼接聚类">曲面拼接聚类</h2>
@@ -346,18 +346,18 @@ plt.title(<span class="hljs-string">"(d) Clusters found via K-means"</span>, fon
 <p><img src="images/chapter7/7-3.png" alt="图7-3"></img></p>
 <p><img src="images/chapter7/7-4.png" alt="图7-4"></img></p>
 <p>例 7-2</p>
-<pre><code class="lang-python"><span class="hljs-keyword">from</span> mpl_toolkits.mplot3d <span class="hljs-keyword">import</span> Axes3D 
-<span class="hljs-keyword">from</span> sklearn <span class="hljs-keyword">import</span> manifold, datasets 
+<pre><code class="lang-pythonthon">from mpl_toolkits.mplot3d import Axes3D 
+from sklearn import manifold, datasets 
 
-<span class="hljs-comment"># 在瑞士卷训练集上产生噪声</span>
-X, color = datasets.samples_generator.make_swiss_roll(n_samples=<span class="hljs-number">1500</span>) 
+# 在瑞士卷训练集上产生噪声
+X, color = datasets.samples_generator.make_swiss_roll(n_samples=1500) 
 
-<span class="hljs-comment"># 用100 K-均值聚类估计数据集 </span>
-clusters_swiss_roll = KMeans(n_clusters=<span class="hljs-number">100</span>, random_state=<span class="hljs-number">1</span>).fit_predict(X) 
+# 用100 K-均值聚类估计数据集 
+clusters_swiss_roll = KMeans(n_clusters=100, random_state=1).fit_predict(X) 
 
-<span class="hljs-comment"># 展示用数据集，其中颜色是K-均值聚类的id</span>
-fig2 = plt.figure() ax = fig2.add_subplot(<span class="hljs-number">111</span>, projection=<span class="hljs-string">'3d'</span>) 
-ax.scatter(X[:, <span class="hljs-number">0</span>], X[:, <span class="hljs-number">1</span>], X[:, <span class="hljs-number">2</span>], c=clusters_swiss_roll, cmap=<span class="hljs-string">'Spectral'</span>)
+# 展示用数据集，其中颜色是K-均值聚类的id
+fig2 = plt.figure() ax = fig2.add_subplot(111, projection='3d') 
+ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=clusters_swiss_roll, cmap='Spectral')
 </code></pre>
 <p>在这个例子中，我们在瑞士卷表面上随机生成 1500 个点，并要求 k 均值用 100 个簇来近似它。我们提出 100 这个数字，因为它看起来相当大，使每一簇覆盖了相当小的空间。结果看起来不错；簇群确实是很小的的，并且流体的不同部分被映射到不同的簇。不错！但我们完成了吗？</p>
 <p>问题是，如果我们选择一个太小的<code>K</code>，那么从多元学习的角度来看，结果不会那么好。图 7-5 显示了 k 均值用 10 个簇在瑞士卷的输出。我们可以清楚地看流体的完全的部分都被映射到相同的簇（例如黄色、紫色、绿色和品红簇）的数据。</p>
@@ -371,109 +371,109 @@ ax.scatter(X[:, <span class="hljs-number">0</span>], X[:, <span class="hljs-numb
 <p>聚类算法分析数据的空间分布。因此，k 均值特征化创建了一个压缩的空间索引，该数据可以在下一阶段被馈送到模型中。这是模型堆叠（stacking）的一个例子。</p>
 <p>例 7-3 显示了一个简单的 k 均值特征。它被定义为可以训练数据和变换任何新数据的类对象。为了说明在聚类时使用和不使用目标信息之间的差异，我们将特征化器应用到使用<code>sklearn</code>的 <em>make——moons</em> 函数（例 7-4）生成的合成数据集。然后我们绘制簇边界的 Voronoi 图。图 7-6 展示出了结果的比较。底部面板显示没有目标信息训练的集群。注意，许多簇跨越两个类之间的空空间。顶部面板表明，当聚类算法被给定目标信息时，聚类边界可以沿着类边界更好地对齐。</p>
 <p>例 7-3</p>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np 
-<span class="hljs-keyword">from</span> sklearn.cluster <span class="hljs-keyword">import</span> KMeans 
+<pre><code class="lang-pythonthon">import numpy as np 
+from sklearn.cluster import KMeans 
 
-<span class="hljs-keyword">class</span> <span class="hljs-title class_">KMeansFeaturizer</span>:     
-    <span class="hljs-string">"""将数字型数据输入k-均值聚类.          
+class KMeansFeaturizer:     
+    """将数字型数据输入k-均值聚类.          
     在输入数据上运行k-均值并且把每个数据点设定为它的簇id. 如果存在目标变量，则将其缩放并包含为k-均值的输入，以导出服从分类边界以及组相似点的簇。
-    """</span> 
+    """ 
 
-    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, k=<span class="hljs-number">100</span>, target_scale=<span class="hljs-number">5.0</span>, random_state=<span class="hljs-literal">None</span></span>):         
-        <span class="hljs-variable language_">self</span>.k = k         
-        <span class="hljs-variable language_">self</span>.target_scale = target_scale         
-        <span class="hljs-variable language_">self</span>.random_state = random_state              
+    def __init__(self, k=100, target_scale=5.0, random_state=None):         
+        self.k = k         
+        self.target_scale = target_scale         
+        self.random_state = random_state              
 
-    <span class="hljs-keyword">def</span> <span class="hljs-title function_">fit</span>(<span class="hljs-params">self, X, y=<span class="hljs-literal">None</span></span>):         
-    <span class="hljs-string">"""在输入数据上运行k-均值，并找到中心."""</span>         
-        <span class="hljs-keyword">if</span> y <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:             
-            <span class="hljs-comment"># 没有目标变量运行k-均值             </span>
-            km_model = KMeans(n_clusters=<span class="hljs-variable language_">self</span>.k,n_init=<span class="hljs-number">20</span>,random_state=<span class="hljs-variable language_">self</span>.random_state)             
+    def fit(self, X, y=None):         
+    """在输入数据上运行k-均值，并找到中心."""         
+        if y is None:             
+            # 没有目标变量运行k-均值             
+            km_model = KMeans(n_clusters=self.k,n_init=20,random_state=self.random_state)             
             km_model.fit(X)
-            <span class="hljs-variable language_">self</span>.km_model_ = km_model             
-            <span class="hljs-variable language_">self</span>.cluster_centers_ = km_model.cluster_centers_             
-            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span> 
+            self.km_model_ = km_model             
+            self.cluster_centers_ = km_model.cluster_centers_             
+            return self 
 
-        <span class="hljs-comment"># 有目标信息，使用合适的缩减并把输入数据输入k-均值 </span>
-        data_with_target = np.hstack((X, y[:,np.newaxis]*<span class="hljs-variable language_">self</span>.target_scale)) 
+        # 有目标信息，使用合适的缩减并把输入数据输入k-均值 
+        data_with_target = np.hstack((X, y[:,np.newaxis]*self.target_scale)) 
 
-        <span class="hljs-comment"># 在数据和目标上简历预训练k-均值模型         </span>
-        km_model_pretrain = KMeans(n_clusters=<span class="hljs-variable language_">self</span>.k,n_init=<span class="hljs-number">20</span>,random_state=<span class="hljs-variable language_">self</span>.random_state)         
+        # 在数据和目标上简历预训练k-均值模型         
+        km_model_pretrain = KMeans(n_clusters=self.k,n_init=20,random_state=self.random_state)         
         km_model_pretrain.fit(data_with_target) 
 
-        <span class="hljs-comment">#运行k-均值第二次获得簇在原始空间没有目标信息。使用预先训练中发现的质心进行初始化。</span>
-        <span class="hljs-comment">#通过一个迭代的集群分配和质心重新计算。       </span>
-        km_model = KMeans(n_clusters=<span class="hljs-variable language_">self</span>.k,init=km_model_pretrain.cluster_centers_[:,:<span class="hljs-number">2</span>],n_init=<span class="hljs-number">1</span>,max_iter=<span class="hljs-number">1</span>)         
+        #运行k-均值第二次获得簇在原始空间没有目标信息。使用预先训练中发现的质心进行初始化。
+        #通过一个迭代的集群分配和质心重新计算。       
+        km_model = KMeans(n_clusters=self.k,init=km_model_pretrain.cluster_centers_[:,:2],n_init=1,max_iter=1)         
         km_model.fit(X)                  
-        <span class="hljs-variable language_">self</span>.km_model = km_model         
-        <span class="hljs-variable language_">self</span>.cluster_centers_ = km_model.cluster_centers_         
-        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>  
+        self.km_model = km_model         
+        self.cluster_centers_ = km_model.cluster_centers_         
+        return self  
 
-    <span class="hljs-keyword">def</span> <span class="hljs-title function_">transform</span>(<span class="hljs-params">self, X, y=<span class="hljs-literal">None</span></span>):         
-    <span class="hljs-string">"""为每个输入数据点输出最接近的簇id。"""</span>           
-        clusters = <span class="hljs-variable language_">self</span>.km_model.predict(X)         
-        <span class="hljs-keyword">return</span> clusters[:,np.newaxis]          
+    def transform(self, X, y=None):         
+    """为每个输入数据点输出最接近的簇id。"""           
+        clusters = self.km_model.predict(X)         
+        return clusters[:,np.newaxis]          
 
-    <span class="hljs-keyword">def</span> <span class="hljs-title function_">fit_transform</span>(<span class="hljs-params">self, X, y=<span class="hljs-literal">None</span></span>):       
-        <span class="hljs-variable language_">self</span>.fit(X, y)         
-        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.transform(X, y)
+    def fit_transform(self, X, y=None):       
+        self.fit(X, y)         
+        return self.transform(X, y)
 </code></pre>
 <p>例 7-4</p>
-<pre><code class="lang-python"><span class="hljs-keyword">from</span> scipy.spatial <span class="hljs-keyword">import</span> Voronoi, voronoi_plot_2d 
-<span class="hljs-keyword">from</span> sklearn.datasets <span class="hljs-keyword">import</span> make_moons 
+<pre><code class="lang-pythonthon">from scipy.spatial import Voronoi, voronoi_plot_2d 
+from sklearn.datasets import make_moons 
 
-training_data, training_labels = make_moons(n_samples=<span class="hljs-number">2000</span>, noise=<span class="hljs-number">0.2</span>) 
-kmf_hint = KMeansFeaturizer(k=<span class="hljs-number">100</span>, target_scale=<span class="hljs-number">10</span>).fit(training_data, training_labels) 
-kmf_no_hint = KMeansFeaturizer(k=<span class="hljs-number">100</span>, target_scale=<span class="hljs-number">0</span>).fit(training_data, training_labels) 
+training_data, training_labels = make_moons(n_samples=2000, noise=0.2) 
+kmf_hint = KMeansFeaturizer(k=100, target_scale=10).fit(training_data, training_labels) 
+kmf_no_hint = KMeansFeaturizer(k=100, target_scale=0).fit(training_data, training_labels) 
 
-<span class="hljs-keyword">def</span> <span class="hljs-title function_">kmeans_voronoi_plot</span>(<span class="hljs-params">X, y, cluster_centers, ax</span>):     
-    <span class="hljs-string">"""绘制与数据叠加的k-均值聚类的Voronoi图"""</span> 
-    ax.scatter(X[:, <span class="hljs-number">0</span>], X[:, <span class="hljs-number">1</span>], c=y, cmap=<span class="hljs-string">'Set1'</span>, alpha=<span class="hljs-number">0.2</span>)     
+def kmeans_voronoi_plot(X, y, cluster_centers, ax):     
+    """绘制与数据叠加的k-均值聚类的Voronoi图""" 
+    ax.scatter(X[:, 0], X[:, 1], c=y, cmap='Set1', alpha=0.2)     
     vor = Voronoi(cluster_centers)     
-    voronoi_plot_2d(vor, ax=ax, show_vertices=<span class="hljs-literal">False</span>, alpha=<span class="hljs-number">0.5</span>)
+    voronoi_plot_2d(vor, ax=ax, show_vertices=False, alpha=0.5)
 </code></pre>
 <p><img src="images/chapter7/7-6.png" alt="图7-6"></img></p>
 <p>让我们测试 k 均值特征分类的有效性。例 7-5 对 k 均值簇特征增强的输入数据应用 Logistic 回归。比较了与使用径向基核的支持向量机（RBF SVM）、K 近邻（KNN）、随机森林（RF）和梯度提升树（GBT）的结果。随机森林和梯度提升树是最流行的非线性分类器，具有最先进的性能。RBF 支持向量机是欧氏空间的一种合理的非线性分类器。KNN 根据其 K 近邻的平均值对数据进行分类。（请参阅“分类器概述”来概述每个分类器。）</p>
 <p>分类器的默认输入数据是数据的 2D 坐标。Logistic 回归也给出了簇成员特征（在图 7-7 中标注为“k 均值的 LR”）。作为基线，我们也尝试在二维坐标（标记为“LR”）上进行逻辑回归。</p>
 <p>例 7-4</p>
-<pre><code class="lang-python"><span class="hljs-keyword">from</span> sklearn.linear_model 
-<span class="hljs-keyword">import</span> LogisticRegression 
-<span class="hljs-keyword">from</span> sklearn.svm <span class="hljs-keyword">import</span> SVC 
-<span class="hljs-keyword">from</span> sklearn.neighbors <span class="hljs-keyword">import</span> KNeighborsClassifier 
-<span class="hljs-keyword">from</span> sklearn.ensemble <span class="hljs-keyword">import</span> RandomForestClassifier,GradientBoostingClassifier 
+<pre><code class="lang-pythonthon">from sklearn.linear_model 
+import LogisticRegression 
+from sklearn.svm import SVC 
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier 
 
-<span class="hljs-comment">#生成与训练数据相同分布的测试数据 </span>
-test_data, test_labels = make_moons(n_samples=<span class="hljs-number">2000</span>, noise=<span class="hljs-number">0.3</span>) 
+#生成与训练数据相同分布的测试数据 
+test_data, test_labels = make_moons(n_samples=2000, noise=0.3) 
 
-<span class="hljs-comment"># 使用k-均值特技器生成簇特征</span>
+# 使用k-均值特技器生成簇特征
 training_cluster_features = kmf_hint.transform(training_data) test_cluster_features = kmf_hint.transform(test_data) 
 
-<span class="hljs-comment"># 将新的输入特征和聚类特征整合</span>
+# 将新的输入特征和聚类特征整合
 training_with_cluster = scipy.sparse.hstack((training_data, training_cluster_features)) test_with_cluster = scipy.sparse.hstack((test_data, test_cluster_features)) 
 
-<span class="hljs-comment"># 建立分类器 </span>
+# 建立分类器 
 lr_cluster = LogisticRegression(random_state=seed).fit(training_with_cluster, training_labels) 
-classifier_names = [<span class="hljs-string">'LR'</span>,<span class="hljs-string">'kNN'</span>,<span class="hljs-string">'RBF SVM'</span>,<span class="hljs-string">'Random Forest'</span>,<span class="hljs-string">'Boosted Trees'</span>] 
-classifiers = [LogisticRegression(random_state=seed),KNeighborsClassifier(<span class="hljs-number">5</span>),SVC(gamma=<span class="hljs-number">2</span>, C=<span class="hljs-number">1</span>),RandomForestClassifier(max_depth=<span class="hljs-number">5</span>, n_estimators=<span class="hljs-number">10</span>, max_features=<span class="hljs-number">1</span>),GradientBoostingClassifier(n_estimators=<span class="hljs-number">10</span>, learning_rate=<span class="hljs-number">1.0</span>, max_depth=<span class="hljs-number">5</span>)] 
-<span class="hljs-keyword">for</span> model <span class="hljs-keyword">in</span> classifiers:     
+classifier_names = ['LR','kNN','RBF SVM','Random Forest','Boosted Trees'] 
+classifiers = [LogisticRegression(random_state=seed),KNeighborsClassifier(5),SVC(gamma=2, C=1),RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),GradientBoostingClassifier(n_estimators=10, learning_rate=1.0, max_depth=5)] 
+for model in classifiers:     
     model.fit(training_data, training_labels) 
 
-<span class="hljs-comment"># 辅助函数使用ROC评估分类器性能</span>
-<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_roc</span>(<span class="hljs-params">model, data, labels</span>): 
-    <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(model, <span class="hljs-string">"decision_function"</span>):         
+# 辅助函数使用ROC评估分类器性能
+def test_roc(model, data, labels): 
+    if hasattr(model, "decision_function"):         
         predictions = model.decision_function(data)     
-    <span class="hljs-keyword">else</span>:         
-        predictions = model.predict_proba(data)[:,<span class="hljs-number">1</span>]     
+    else:         
+        predictions = model.predict_proba(data)[:,1]     
         fpr, tpr, _ = sklearn.metrics.roc_curve(labels, predictions)     
-        <span class="hljs-keyword">return</span> fpr, tpr 
+        return fpr, tpr 
 
-<span class="hljs-comment"># 显示结果 </span>
-<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt plt.figure() 
-fpr_cluster, tpr_cluster = test_roc(lr_cluster, test_with_cluster, test_labels) plt.plot(fpr_cluster, tpr_cluster, <span class="hljs-string">'r-'</span>, label=<span class="hljs-string">'LR with k-means'</span>) 
+# 显示结果 
+import matplotlib.pyplot as plt plt.figure() 
+fpr_cluster, tpr_cluster = test_roc(lr_cluster, test_with_cluster, test_labels) plt.plot(fpr_cluster, tpr_cluster, 'r-', label='LR with k-means') 
 
-<span class="hljs-keyword">for</span> i, model <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(classifiers):     
+for i, model in enumerate(classifiers):     
     fpr, tpr = test_roc(model, test_data, test_labels)     plt.plot(fpr, tpr, label=classifier_names[i])      
-    plt.plot([<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], <span class="hljs-string">'k--'</span>) 
+    plt.plot([0, 1], [0, 1], 'k--') 
     plt.legend()
 </code></pre>
 <h2 id="可选择的密集化">可选择的密集化</h2>
@@ -545,7 +545,7 @@ fpr_cluster, tpr_cluster = test_roc(lr_cluster, test_with_cluster, test_labels) 
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"七、非线性特征提取和模型堆叠","level":"1.8","depth":1,"next":{"title":"八、自动化特征提取器：图像特征提取和深度学习","level":"1.9","depth":1,"path":"8.自动化特征提取器：图像特征提取和深度学习.md","ref":"./8.自动化特征提取器：图像特征提取和深度学习.md","articles":[]},"previous":{"title":"六、降维：使用 PCA 压缩数据集","level":"1.7","depth":1,"path":"6.降维：用_PCA_压缩数据集.md","ref":"./6.降维：用_PCA_压缩数据集.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"7.非线性特征提取和模型堆叠.md","mtime":"2024-08-24T12:46:14.064Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-08-24T12:50:39.023Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"七、非线性特征提取和模型堆叠","level":"1.8","depth":1,"next":{"title":"八、自动化特征提取器：图像特征提取和深度学习","level":"1.9","depth":1,"path":"8.自动化特征提取器：图像特征提取和深度学习.md","ref":"./8.自动化特征提取器：图像特征提取和深度学习.md","articles":[]},"previous":{"title":"六、降维：使用 PCA 压缩数据集","level":"1.7","depth":1,"path":"6.降维：用_PCA_压缩数据集.md","ref":"./6.降维：用_PCA_压缩数据集.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"7.非线性特征提取和模型堆叠.md","mtime":"2025-01-05T17:59:25.899Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-05T17:59:35.861Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

@@ -6,7 +6,7 @@
         <title>二、简单数字的奇特技巧 · HonKit</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="HonKit 5.1.4">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -49,7 +49,7 @@
     
     
     <meta name="HandheldFriendly" content="true"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
@@ -314,13 +314,14 @@
 <p>在 Million Song 数据集中，原始监听计数不是用户口味的可靠度量。（在统计术语中，健壮性意味着该方法在各种各样的条件下工作。）用户有不同的听力习惯。有些人可能把他们最喜欢的歌曲放在无限的循环中，而其他人可能只在特殊的场合品尝它们。很难说听一首歌20次的人一定喜欢听10次的人的两倍。</p>
 <p>用户偏好的更健壮表示是使计数二元化和修剪所有大于1的计数为1。换句话说，如果用户至少听过一首歌，那么我们将其视为用户喜欢歌曲。这样，模型不需要花费周期来预测原始计数之间的微小差异。二进制目标是用户偏好的简单而稳健的度量。</p>
 <h3 id="例子2-1。使-million-song-数据集中听歌计数二进制化。">例子2-1。使 Million Song 数据集中听歌计数二进制化。</h3>
-<pre><code>import pandas as pd
-listen_count = pd.read_csv('millionsong/train_triplets.txt.zip', header=None, delimiter='\t')
-# The table contains user-song-count triplets. Only non-zero counts are
-# included. Hence to binarize the count, we just need to set the entire
-# count column to 1.
-listen_count[2] = 1
-</code></pre><p>这是我们设计模型目标变量的一个例子。严格地说, 目标不是一个特征, 因为它不是输入。但有时我们确实需要修改目标以解决正确的问题。</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+listen_count = pd.read_csv(<span class="hljs-string">'millionsong/train_triplets.txt.zip'</span>, header=<span class="hljs-literal">None</span>, delimiter=<span class="hljs-string">'\t'</span>)
+<span class="hljs-comment"># The table contains user-song-count triplets. Only non-zero counts are</span>
+<span class="hljs-comment"># included. Hence to binarize the count, we just need to set the entire</span>
+<span class="hljs-comment"># count column to 1.</span>
+listen_count[<span class="hljs-number">2</span>] = <span class="hljs-number">1</span>
+</code></pre>
+<p>这是我们设计模型目标变量的一个例子。严格地说, 目标不是一个特征, 因为它不是输入。但有时我们确实需要修改目标以解决正确的问题。</p>
 <h2 id="量化或装箱">量化或装箱</h2>
 <p>对于本练习, 我们从第 6 轮 Yelp 数据集挑战中采集数据, 并创建一个更小的分类数据集。Yelp 数据集包含用户对来自北美和欧洲十个城市的企业的评论。每个商户都标记为零个或多个类别。以下是有关数据集的相关统计信息。</p>
 <h3 id="关于第-6-轮-yelp-数据集的统计">关于第 6 轮 Yelp 数据集的统计</h3>
@@ -332,23 +333,24 @@ listen_count[2] = 1
 </ul>
 <p>每个商户都有一个评论计数。假设我们的任务是使用协同过滤来预测用户可能给企业的评级。评论计数可能是一个有用的输入特征，因为通常在流行和良好的评级之间有很强的相关性。现在的问题是，我们应该使用原始评论计数或进一步处理它吗？图2-4显示了所有商户评论计数的直方图。我们看到和音乐听歌计数一样的模式。大部分的统计数字都很小，但一些企业有成千上万的评论。</p>
 <h3 id="例子2-2。在yelp数据集中可视化商户评论计数。">例子2-2。在YELP数据集中可视化商户评论计数。</h3>
-<pre><code>&gt;&gt;&gt; import pandas as pd
-&gt;&gt;&gt; import json
-### Load the data about businesses
-&gt;&gt;&gt; biz_file = open('yelp_academic_dataset_business.json')
-&gt;&gt;&gt; biz_df = pd.DataFrame([json.loads(x) for x in biz_file.readlines()])
-&gt;&gt;&gt; biz_file.close()
-&gt;&gt;&gt; import matplotlib.pyplot as plt
-&gt;&gt;&gt; import seaborn as sns
-### Plot the histogram of the review counts
-&gt;&gt;&gt; sns.set_style('whitegrid')
-&gt;&gt;&gt; fig, ax = plt.subplots()
-&gt;&gt;&gt; biz_df['review_count'].hist(ax=ax, bins=100)
-&gt;&gt;&gt; ax.set_yscale('log')
-&gt;&gt;&gt; ax.tick_params(labelsize=14)
-&gt;&gt;&gt; ax.set_xlabel('Review Count', fontsize=14)
-&gt;&gt;&gt; ax.set_ylabel('Occurrence', fontsize=14)
-</code></pre><p><img src="images/chapter2/review_count.png" alt="review count"></img></p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> json
+<span class="hljs-comment">### Load the data about businesses</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_file = <span class="hljs-built_in">open</span>(<span class="hljs-string">'yelp_academic_dataset_business.json'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_df = pd.DataFrame([json.loads(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> biz_file.readlines()])
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_file.close()
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns
+<span class="hljs-comment">### Plot the histogram of the review counts</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>sns.set_style(<span class="hljs-string">'whitegrid'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>fig, ax = plt.subplots()
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_df[<span class="hljs-string">'review_count'</span>].hist(ax=ax, bins=<span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_yscale(<span class="hljs-string">'log'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.tick_params(labelsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_xlabel(<span class="hljs-string">'Review Count'</span>, fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/review_count.png" alt="review count"></img></p>
 <p><strong>Figure 2-4. Histogram of business review counts in the Yelp reviews dataset. The y-axis is on a log-scale.</strong></p>
 <p>对于许多模型来说，跨越数个数量级的原始计数是有问题的。在线性模型中，相同的线性系数必须对计数的所有可能值工作。大量的计数也可能破坏无监督学习方法，如k-均值聚类，它使用相似性函数来测量数据点之间的相似性。k-均值使用数据点之间的欧几里得距离。数据向量的一个元素中的大计数将超过所有其他元素中的相似性，这可能会丢弃整个相似性度量。</p>
 <p>一种解决方案是通过量化计数来包含标量。换句话说，我们将计数分组到容器中，并且去掉实际的计数值。量化将连续数映射成离散数。我们可以把离散化的数字看作是代表强度度量的容器的有序的序列。</p>
@@ -369,64 +371,67 @@ listen_count[2] = 1
 </ul>
 <p>当数字跨越多个数量级时，最好用10个幂（或任何常数的幂）来分组：0－9、10-99、100-999、100-9999等。容器宽度呈指数增长，从O（10）、O（100）到O（1000）和以上。要从计数映射到bin，取计数的log值。指数宽度的划分与对数变换非常相关，我们在“对数变换”中讨论。</p>
 <h3 id="例子2-3。用固定宽度的箱进行量化计数">例子2-3。用固定宽度的箱进行量化计数</h3>
-<pre><code>&gt;&gt;&gt; import numpy as np
-### Generate 20 random integers uniformly between 0 and 99
-&gt;&gt;&gt; small_counts = np.random.randint(0, 100, 20)
-&gt;&gt;&gt; small_counts
-array([30, 64, 49, 26, 69, 23, 56, 7, 69, 67, 87, 14, 67, 33, 88, 77, 75, 47, 44, 93])
-### Map to evenly spaced bins 0-9 by division
-&gt;&gt;&gt; np.floor_divide(small_counts, 10)
-array([3, 6, 4, 2, 6, 2, 5, 0, 6, 6, 8, 1, 6, 3, 8, 7, 7, 4, 4, 9], dtype=int32)
-### An array of counts that span several magnitudes
-&gt;&gt;&gt; large_counts = [296, 8286, 64011, 80, 3, 725, 867, 2215, 7689, 11495, 91897, 44, 28, 7971, 926, 122, 22222]
-### Map to exponential-width bins via the log function
-&gt;&gt;&gt; np.floor(np.log10(large_counts))
-array([ 2., 3., 4., 1., 0., 2., 2., 3., 3., 4., 4., 1., 1., 3., 2., 2., 4.])
-</code></pre><h3 id="分位数装箱">分位数装箱</h3>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-comment">### Generate 20 random integers uniformly between 0 and 99</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>small_counts = np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">100</span>, <span class="hljs-number">20</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>small_counts
+array([<span class="hljs-number">30</span>, <span class="hljs-number">64</span>, <span class="hljs-number">49</span>, <span class="hljs-number">26</span>, <span class="hljs-number">69</span>, <span class="hljs-number">23</span>, <span class="hljs-number">56</span>, <span class="hljs-number">7</span>, <span class="hljs-number">69</span>, <span class="hljs-number">67</span>, <span class="hljs-number">87</span>, <span class="hljs-number">14</span>, <span class="hljs-number">67</span>, <span class="hljs-number">33</span>, <span class="hljs-number">88</span>, <span class="hljs-number">77</span>, <span class="hljs-number">75</span>, <span class="hljs-number">47</span>, <span class="hljs-number">44</span>, <span class="hljs-number">93</span>])
+<span class="hljs-comment">### Map to evenly spaced bins 0-9 by division</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.floor_divide(small_counts, <span class="hljs-number">10</span>)
+array([<span class="hljs-number">3</span>, <span class="hljs-number">6</span>, <span class="hljs-number">4</span>, <span class="hljs-number">2</span>, <span class="hljs-number">6</span>, <span class="hljs-number">2</span>, <span class="hljs-number">5</span>, <span class="hljs-number">0</span>, <span class="hljs-number">6</span>, <span class="hljs-number">6</span>, <span class="hljs-number">8</span>, <span class="hljs-number">1</span>, <span class="hljs-number">6</span>, <span class="hljs-number">3</span>, <span class="hljs-number">8</span>, <span class="hljs-number">7</span>, <span class="hljs-number">7</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">9</span>], dtype=int32)
+<span class="hljs-comment">### An array of counts that span several magnitudes</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>large_counts = [<span class="hljs-number">296</span>, <span class="hljs-number">8286</span>, <span class="hljs-number">64011</span>, <span class="hljs-number">80</span>, <span class="hljs-number">3</span>, <span class="hljs-number">725</span>, <span class="hljs-number">867</span>, <span class="hljs-number">2215</span>, <span class="hljs-number">7689</span>, <span class="hljs-number">11495</span>, <span class="hljs-number">91897</span>, <span class="hljs-number">44</span>, <span class="hljs-number">28</span>, <span class="hljs-number">7971</span>, <span class="hljs-number">926</span>, <span class="hljs-number">122</span>, <span class="hljs-number">22222</span>]
+<span class="hljs-comment">### Map to exponential-width bins via the log function</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.floor(np.log10(large_counts))
+array([ <span class="hljs-number">2.</span>, <span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">3.</span>, <span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">1.</span>, <span class="hljs-number">3.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">2.</span>, <span class="hljs-number">4.</span>])
+</code></pre>
+<h3 id="分位数装箱">分位数装箱</h3>
 <p>固定宽度装箱很容易计算。但是如果计数有很大的差距, 那么将会有许多空的垃圾箱没有数据。该问题可以通过基于数据分布的垃圾箱自适应定位来解决。这可以使用分发的分位数来完成。</p>
 <p>分位数是将数据划分为相等部分的值。例如, 中位数将数据分成一半;一半的数据是较小的, 一半大于中位数。分位数把数据分成几个部分, 十分位数把数据划分成十份。示例2-4 演示如何计算 Yelp 商户评论数的十等分, 图2-5 覆盖直方图上的十等分。这就更清楚地说明了对更小的计数的歪斜。</p>
 <h3 id="例子-2-4。计算-yelp-商户评论数的十分位数">例子 2-4。计算 Yelp 商户评论数的十分位数</h3>
-<pre><code>&gt;&gt;&gt; deciles = biz_df['review_count'].quantile([.1, .2, .3, .4, .5, .6, .7, .8, .9])
-&gt;&gt;&gt; deciles
-0.1 3.0
-0.2 4.0
-0.3 5.0
-0.4 6.0
-0.5 8.0
-0.6 12.0
-0.7 17.0
-0.8 28.0
-0.9 58.0
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>deciles = biz_df[<span class="hljs-string">'review_count'</span>].quantile([<span class="hljs-number">.1</span>, <span class="hljs-number">.2</span>, <span class="hljs-number">.3</span>, <span class="hljs-number">.4</span>, <span class="hljs-number">.5</span>, <span class="hljs-number">.6</span>, <span class="hljs-number">.7</span>, <span class="hljs-number">.8</span>, <span class="hljs-number">.9</span>])
+<span class="hljs-meta">&gt;&gt;&gt; </span>deciles
+<span class="hljs-number">0.1</span> <span class="hljs-number">3.0</span>
+<span class="hljs-number">0.2</span> <span class="hljs-number">4.0</span>
+<span class="hljs-number">0.3</span> <span class="hljs-number">5.0</span>
+<span class="hljs-number">0.4</span> <span class="hljs-number">6.0</span>
+<span class="hljs-number">0.5</span> <span class="hljs-number">8.0</span>
+<span class="hljs-number">0.6</span> <span class="hljs-number">12.0</span>
+<span class="hljs-number">0.7</span> <span class="hljs-number">17.0</span>
+<span class="hljs-number">0.8</span> <span class="hljs-number">28.0</span>
+<span class="hljs-number">0.9</span> <span class="hljs-number">58.0</span>
 Name: review_count, dtype: float64
-### Visualize the deciles on the histogram
-&gt;&gt;&gt; sns.set_style('whitegrid')
-&gt;&gt;&gt; fig, ax = plt.subplots()
-&gt;&gt;&gt; biz_df['review_count'].hist(ax=ax, bins=100)
-&gt;&gt;&gt; for pos in deciles:
-...     handle = plt.axvline(pos, color='r')
-&gt;&gt;&gt; ax.legend([handle], ['deciles'], fontsize=14)
-&gt;&gt;&gt; ax.set_yscale('log')
-&gt;&gt;&gt; ax.set_xscale('log')
-&gt;&gt;&gt; ax.tick_params(labelsize=14)
-&gt;&gt;&gt; ax.set_xlabel('Review Count', fontsize=14)
-&gt;&gt;&gt; ax.set_ylabel('Occurrence', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-5.png" alt="Deciles of the review counts in the Yelp reviews dataset"></img></p>
+<span class="hljs-comment">### Visualize the deciles on the histogram</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>sns.set_style(<span class="hljs-string">'whitegrid'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>fig, ax = plt.subplots()
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_df[<span class="hljs-string">'review_count'</span>].hist(ax=ax, bins=<span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> deciles:
+<span class="hljs-meta">... </span>    handle = plt.axvline(pos, color=<span class="hljs-string">'r'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.legend([handle], [<span class="hljs-string">'deciles'</span>], fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_yscale(<span class="hljs-string">'log'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_xscale(<span class="hljs-string">'log'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.tick_params(labelsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_xlabel(<span class="hljs-string">'Review Count'</span>, fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-5.png" alt="Deciles of the review counts in the Yelp reviews dataset"></img></p>
 <p><strong>Figure 2-5. Deciles of the review counts in the Yelp reviews dataset. Note that both x- and y-axes are in log scale.</strong></p>
 <p>为了计算分位数和映射数据到分位数箱，我们可以使用 Pandas 库。 pandas.DataFrame.quantile 和 pandas.Series.quantile 用于计算分位数。pandas.qcut将数据映射到所需数量的分位数。</p>
 <h3 id="例子2-5。按分位数分箱计数。">例子2-5。按分位数分箱计数。</h3>
-<pre><code>### Continue example Example 2-3 with large_counts
-&gt;&gt;&gt; import pandas as pd
-### Map the counts to quartiles
-&gt;&gt;&gt; pd.qcut(large_counts, 4, labels=False)
-array([1, 2, 3, 0, 0, 1, 1, 2, 2, 3, 3, 0, 0, 2, 1, 0, 3], dtype=int64)
-### Compute the quantiles themselves
-&gt;&gt;&gt; large_counts_series = pd.Series(large_counts)
-&gt;&gt;&gt; large_counts_series.quantile([0.25, 0.5, 0.75])
-0.25 122.0
-0.50 926.0
-0.75 8286.0
+<pre><code class="lang-python"><span class="hljs-comment">### Continue example Example 2-3 with large_counts</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-comment">### Map the counts to quartiles</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>pd.qcut(large_counts, <span class="hljs-number">4</span>, labels=<span class="hljs-literal">False</span>)
+array([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">3</span>], dtype=int64)
+<span class="hljs-comment">### Compute the quantiles themselves</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>large_counts_series = pd.Series(large_counts)
+<span class="hljs-meta">&gt;&gt;&gt; </span>large_counts_series.quantile([<span class="hljs-number">0.25</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">0.75</span>])
+<span class="hljs-number">0.25</span> <span class="hljs-number">122.0</span>
+<span class="hljs-number">0.50</span> <span class="hljs-number">926.0</span>
+<span class="hljs-number">0.75</span> <span class="hljs-number">8286.0</span>
 dtype: float64
-</code></pre><h2 id="对数转换">对数转换</h2>
+</code></pre>
+<h2 id="对数转换">对数转换</h2>
 <p>在“量化或装箱”中，我们简要地介绍了把计数的对数映射到指数宽度箱的概念。让我们现在再看一看。</p>
 <p>对数函数是指数函数的逆。它定义为
 <img src="images/chapter2/log_function.png" alt="log function"></img>
@@ -435,17 +440,18 @@ dtype: float64
 <p><strong>Figure 2-6. The log function compresses the high numeric range and expands the low range. Note how the horizontal x values from 100 to 1000 got compressed into just 2.0 to 3.0 in the vertical y range, while the tiny horizontal portion of x values less than 100 are mapped to the rest of the vertical range.</strong></p>
 <p>对数变换是处理具有重尾分布的正数的有力工具。（重尾分布在尾部范围内的概率比高斯分布的概率大）。它将分布在高端的长尾压缩成较短的尾部，并将低端扩展成较长的头部。图2-7比较d对数转换之前和之后的YELP商户评论计数的直方图。Y轴现在都在正常（线性）尺度上。在（0.5，1）范围内的底部图中增加的仓间隔是由于在1和10之间只有10个可能的整数计数。请注意，原始审查计数非常集中在低计数区域，离群值在4000以上。对数变换后，直方图不集中在低端，更分散在X轴上。</p>
 <h3 id="例子2-6。可视化对数变换前后评论数分布">例子2-6。可视化对数变换前后评论数分布</h3>
-<pre><code>fig, (ax1, ax2) = plt.subplots(2,1)
-biz_df['review_count'].hist(ax=ax1, bins=100)
-ax1.tick_params(labelsize=14)
-ax1.set_xlabel('review_count', fontsize=14)
-ax1.set_ylabel('Occurrence', fontsize=14)
+<pre><code class="lang-python">fig, (ax1, ax2) = plt.subplots(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)
+biz_df[<span class="hljs-string">'review_count'</span>].hist(ax=ax1, bins=<span class="hljs-number">100</span>)
+ax1.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax1.set_xlabel(<span class="hljs-string">'review_count'</span>, fontsize=<span class="hljs-number">14</span>)
+ax1.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
 
-biz_df['log_review_count'].hist(ax=ax2, bins=100)
-ax2.tick_params(labelsize=14)
-ax2.set_xlabel('log10(review_count))', fontsize=14)
-ax2.set_ylabel('Occurrence', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-7.png" alt=""></img></p>
+biz_df[<span class="hljs-string">'log_review_count'</span>].hist(ax=ax2, bins=<span class="hljs-number">100</span>)
+ax2.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax2.set_xlabel(<span class="hljs-string">'log10(review_count))'</span>, fontsize=<span class="hljs-number">14</span>)
+ax2.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-7.png" alt=""></img></p>
 <p><strong>Figure 2-7. Comparison of Yelp business review counts before (top) and after (bottom) log transformation.</strong></p>
 <p>另一个例子是来自 UC Irvine 机器学习库的在线新闻流行数据集。以下是有关数据集的相关统计信息。</p>
 <h3 id="在线新闻流行数据集的统计">在线新闻流行数据集的统计</h3>
@@ -455,93 +461,98 @@ ax2.set_ylabel('Occurrence', fontsize=14)
 </ul>
 <p>目的是利用这些特征来预测文章在社交媒体上的用分享数量表示的流行度。在本例中, 我们将只关注一个特征——文章中的单词数。图2-8 显示了对数转换前后特征的直方图。请注意, 在对数转换后, 分布看起来更高斯, 除了长度为零的文章 (无内容) 的断裂。</p>
 <h3 id="例子2-7。可视化在有对数变换和没有对数变换时新闻文章流行度的分布。">例子2-7。可视化在有对数变换和没有对数变换时新闻文章流行度的分布。</h3>
-<pre><code>fig, (ax1, ax2) = plt.subplots(2,1)
-df['n_tokens_content'].hist(ax=ax1, bins=100)
-ax1.tick_params(labelsize=14)
-ax1.set_xlabel('Number of Words in Article', fontsize=14)
-ax1.set_ylabel('Number of Articles', fontsize=14)
+<pre><code class="lang-python">fig, (ax1, ax2) = plt.subplots(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)
+df[<span class="hljs-string">'n_tokens_content'</span>].hist(ax=ax1, bins=<span class="hljs-number">100</span>)
+ax1.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax1.set_xlabel(<span class="hljs-string">'Number of Words in Article'</span>, fontsize=<span class="hljs-number">14</span>)
+ax1.set_ylabel(<span class="hljs-string">'Number of Articles'</span>, fontsize=<span class="hljs-number">14</span>)
 
-df['log_n_tokens_content'].hist(ax=ax2, bins=100)
-ax2.tick_params(labelsize=14)
-ax2.set_xlabel('Log of Number of Words', fontsize=14)
-ax2.set_ylabel('Number of Articles', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-8.png" alt=""></img></p>
+df[<span class="hljs-string">'log_n_tokens_content'</span>].hist(ax=ax2, bins=<span class="hljs-number">100</span>)
+ax2.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax2.set_xlabel(<span class="hljs-string">'Log of Number of Words'</span>, fontsize=<span class="hljs-number">14</span>)
+ax2.set_ylabel(<span class="hljs-string">'Number of Articles'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-8.png" alt=""></img></p>
 <p><strong>Figure 2-8. Comparison of word counts in Mashable news articles before (top) and after (bottom) log transformation.</strong></p>
 <h2 id="对数转换实战">对数转换实战</h2>
 <p>让我们看看在监督学习中对数转换如何执行。我们将使用上面的两个数据集。对于 Yelp 评论数据集, 我们将使用评论的数量来预测商户的平均评级。对于 Mashable 的新闻文章, 我们将使用文章中的字数来预测其流行程度。由于输出是连续的数字, 我们将使用简单的线性回归作为模型。我们在没有对数变换和有对数变换的特色上，使用 Scikit Learn 执行10折交叉验证的线性回归。模型由 R 方评分来评估, 它测量训练后的回归模型预测新数据的良好程度。好的模型有较高的 R 方分数。一个完美的模型得到最高分1。分数可以是负的, 一个坏的模型可以得到一个任意低的负评分。通过交叉验证, 我们不仅得到了分数的估计, 还获得了方差, 这有助于我们判断两种模型之间的差异是否有意义。</p>
 <h3 id="例子2-8。使用对数转换-yelp-评论数预测平均商户评级">例子2-8。使用对数转换 YELP 评论数预测平均商户评级</h3>
-<pre><code>&gt;&gt;&gt; import pandas as pd
-&gt;&gt;&gt; import numpy as np
-&gt;&gt;&gt; import json
-&gt;&gt;&gt; from sklearn import linear_model
-&gt;&gt;&gt; from sklearn.model_selection import cross_val_score
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> json
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> sklearn <span class="hljs-keyword">import</span> linear_model
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> sklearn.model_selection <span class="hljs-keyword">import</span> cross_val_score
 
-## Using the previously loaded Yelp reviews dataframe,
-## compute the log transform of the Yelp review count.
-## Note that we add 1 to the raw count to prevent the logarithm from
-## exploding into negative infinity in case the count is zero.
-&gt;&gt;&gt; biz_df['log_review_count'] = np.log10(biz_df['review_count'] + 1)
+<span class="hljs-comment">## Using the previously loaded Yelp reviews dataframe,</span>
+<span class="hljs-comment">## compute the log transform of the Yelp review count.</span>
+<span class="hljs-comment">## Note that we add 1 to the raw count to prevent the logarithm from</span>
+<span class="hljs-comment">## exploding into negative infinity in case the count is zero.</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_df[<span class="hljs-string">'log_review_count'</span>] = np.log10(biz_df[<span class="hljs-string">'review_count'</span>] + <span class="hljs-number">1</span>)
 
-## Train linear regression models to predict the average stars rating of a business,
-## using the review_count feature with and without log transformation
-## Compare the 10-fold cross validation score of the two models
-&gt;&gt;&gt; m_orig = linear_model.LinearRegression()
-&gt;&gt;&gt; scores_orig = cross_val_score(m_orig, biz_df[['review_count']], biz_df['stars'], cv=10)
-&gt;&gt;&gt; m_log = linear_model.LinearRegression()
-&gt;&gt;&gt; scores_log = cross_val_score(m_log, biz_df[['log_review_count']], biz_df['stars'], cv=10)
-&gt;&gt;&gt; print("R-squared score without log transform: %0.5f (+/- %0.5f)" % (scores_orig.mean(), scores_orig.std() * 2))
-&gt;&gt;&gt; print("R-squared score with log transform: %0.5f (+/- %0.5f)" % (scores_log.mean(), scores_log.std() * 2))
-R-squared score without log transform: -0.03683 (+/- 0.07280)
-R-squared score with log transform: -0.03694 (+/- 0.07650)
-</code></pre><p>从实验的结果来看, 两个简单的模型 (有对数变换和没有对数变换) 在预测目标时同样不好, 而有对数变换的特征表现略差。真令人失望!这并不奇怪, 他们都不是很好, 因为他们都只使用一个功能。但是, 人们本来希望日志转换的功能执行得更好。</p>
+<span class="hljs-comment">## Train linear regression models to predict the average stars rating of a business,</span>
+<span class="hljs-comment">## using the review_count feature with and without log transformation</span>
+<span class="hljs-comment">## Compare the 10-fold cross validation score of the two models</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>m_orig = linear_model.LinearRegression()
+<span class="hljs-meta">&gt;&gt;&gt; </span>scores_orig = cross_val_score(m_orig, biz_df[[<span class="hljs-string">'review_count'</span>]], biz_df[<span class="hljs-string">'stars'</span>], cv=<span class="hljs-number">10</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>m_log = linear_model.LinearRegression()
+<span class="hljs-meta">&gt;&gt;&gt; </span>scores_log = cross_val_score(m_log, biz_df[[<span class="hljs-string">'log_review_count'</span>]], biz_df[<span class="hljs-string">'stars'</span>], cv=<span class="hljs-number">10</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">print</span>(<span class="hljs-string">"R-squared score without log transform: %0.5f (+/- %0.5f)"</span> % (scores_orig.mean(), scores_orig.std() * <span class="hljs-number">2</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">print</span>(<span class="hljs-string">"R-squared score with log transform: %0.5f (+/- %0.5f)"</span> % (scores_log.mean(), scores_log.std() * <span class="hljs-number">2</span>))
+R-squared score without log transform: -<span class="hljs-number">0.03683</span> (+/- <span class="hljs-number">0.07280</span>)
+R-squared score <span class="hljs-keyword">with</span> log transform: -<span class="hljs-number">0.03694</span> (+/- <span class="hljs-number">0.07650</span>)
+</code></pre>
+<p>从实验的结果来看, 两个简单的模型 (有对数变换和没有对数变换) 在预测目标时同样不好, 而有对数变换的特征表现略差。真令人失望!这并不奇怪, 他们都不是很好, 因为他们都只使用一个功能。但是, 人们本来希望日志转换的功能执行得更好。</p>
 <p>让我们看看对数转换在线新闻流行数据集上如何表现。</p>
 <h3 id="例子2-9。利用经过对数转换在线新闻数据中的词数量预测文章流行度">例子2-9。利用经过对数转换在线新闻数据中的词数量预测文章流行度</h3>
-<pre><code>## Download the Online News Popularirty dataset from UCI, then use
-## Pandas to load the file into a dataframe
-&gt;&gt;&gt; df = pd.read_csv('OnlineNewsPopularity.csv', delimiter=', ')
+<pre><code class="lang-python"><span class="hljs-comment">## Download the Online News Popularirty dataset from UCI, then use</span>
+<span class="hljs-comment">## Pandas to load the file into a dataframe</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df = pd.read_csv(<span class="hljs-string">'OnlineNewsPopularity.csv'</span>, delimiter=<span class="hljs-string">', '</span>)
 
-## Take the log transform of the 'n_tokens_content' feature, which
-## represents the number of words (tokens) in a news article.
-&gt;&gt;&gt; df['log_n_tokens_content'] = np.log10(df['n_tokens_content'] + 1)
+<span class="hljs-comment">## Take the log transform of the 'n_tokens_content' feature, which</span>
+<span class="hljs-comment">## represents the number of words (tokens) in a news article.</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'log_n_tokens_content'</span>] = np.log10(df[<span class="hljs-string">'n_tokens_content'</span>] + <span class="hljs-number">1</span>)
 
-## Train two linear regression models to predict the number of shares
-## of an article, one using the original feature and the other the
-## log transformed version.
-&gt;&gt;&gt; m_orig = linear_model.LinearRegression()
-&gt;&gt;&gt; scores_orig = cross_val_score(m_orig, df[['n_tokens_content']], df['shares'], cv=10)
-&gt;&gt;&gt; m_log = linear_model.LinearRegression()
-&gt;&gt;&gt; scores_log = cross_val_score(m_log, df[['log_n_tokens_content']], df['shares'], cv=10)
-&gt;&gt;&gt; print("R-squared score without log transform: %0.5f (+/- %0.5f)" % (scores_orig.mean(), scores_orig.std() * 2))
-&gt;&gt;&gt; print("R-squared score with log transform: %0.5f (+/- %0.5f)" % (scores_log.mean(), scores_log.std() * 2))
-R-squared score without log transform: -0.00242 (+/- 0.00509)
-R-squared score with log transform: -0.00114 (+/- 0.00418)
-</code></pre><p>置信区间仍然重叠，但具有对数变换特征的模型比没有对数变换的表现更好。为什么对数转换在这个数据集上更成功？我们可以通过观察输入特征和目标值的散点图来得到线索。如图2-9的底部面板所示，对数变换重塑了X轴，将目标值（大于200000个份额）中的大离群值进一步拉向轴的右手侧。这给线性模型在输入特征空间的低端更多的“呼吸空间”。没有对数转换（上部面板），在输入值变化下非常小的情况下，模型有更大的压力下适应非常不同的目标值。</p>
+<span class="hljs-comment">## Train two linear regression models to predict the number of shares</span>
+<span class="hljs-comment">## of an article, one using the original feature and the other the</span>
+<span class="hljs-comment">## log transformed version.</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>m_orig = linear_model.LinearRegression()
+<span class="hljs-meta">&gt;&gt;&gt; </span>scores_orig = cross_val_score(m_orig, df[[<span class="hljs-string">'n_tokens_content'</span>]], df[<span class="hljs-string">'shares'</span>], cv=<span class="hljs-number">10</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>m_log = linear_model.LinearRegression()
+<span class="hljs-meta">&gt;&gt;&gt; </span>scores_log = cross_val_score(m_log, df[[<span class="hljs-string">'log_n_tokens_content'</span>]], df[<span class="hljs-string">'shares'</span>], cv=<span class="hljs-number">10</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">print</span>(<span class="hljs-string">"R-squared score without log transform: %0.5f (+/- %0.5f)"</span> % (scores_orig.mean(), scores_orig.std() * <span class="hljs-number">2</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">print</span>(<span class="hljs-string">"R-squared score with log transform: %0.5f (+/- %0.5f)"</span> % (scores_log.mean(), scores_log.std() * <span class="hljs-number">2</span>))
+R-squared score without log transform: -<span class="hljs-number">0.00242</span> (+/- <span class="hljs-number">0.00509</span>)
+R-squared score <span class="hljs-keyword">with</span> log transform: -<span class="hljs-number">0.00114</span> (+/- <span class="hljs-number">0.00418</span>)
+</code></pre>
+<p>置信区间仍然重叠，但具有对数变换特征的模型比没有对数变换的表现更好。为什么对数转换在这个数据集上更成功？我们可以通过观察输入特征和目标值的散点图来得到线索。如图2-9的底部面板所示，对数变换重塑了X轴，将目标值（大于200000个份额）中的大离群值进一步拉向轴的右手侧。这给线性模型在输入特征空间的低端更多的“呼吸空间”。没有对数转换（上部面板），在输入值变化下非常小的情况下，模型有更大的压力下适应非常不同的目标值。</p>
 <h3 id="示例2-10。可视化新闻流程度预测问题中输入输出相关性。">示例2-10。可视化新闻流程度预测问题中输入输出相关性。</h3>
-<pre><code>fig2, (ax1, ax2) = plt.subplots(2,1)
-ax1.scatter(df['n_tokens_content'], df['shares'])
-ax1.tick_params(labelsize=14)
-ax1.set_xlabel('Number of Words in Article', fontsize=14)
-ax1.set_ylabel('Number of Shares', fontsize=14)
+<pre><code class="lang-python">fig2, (ax1, ax2) = plt.subplots(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)
+ax1.scatter(df[<span class="hljs-string">'n_tokens_content'</span>], df[<span class="hljs-string">'shares'</span>])
+ax1.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax1.set_xlabel(<span class="hljs-string">'Number of Words in Article'</span>, fontsize=<span class="hljs-number">14</span>)
+ax1.set_ylabel(<span class="hljs-string">'Number of Shares'</span>, fontsize=<span class="hljs-number">14</span>)
 
-ax2.scatter(df['log_n_tokens_content'], df['shares'])
-ax2.tick_params(labelsize=14)
-ax2.set_xlabel('Log of the Number of Words in Article', fontsize=14)
-ax2.set_ylabel('Number of Shares', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-9.png" alt=""></img></p>
+ax2.scatter(df[<span class="hljs-string">'log_n_tokens_content'</span>], df[<span class="hljs-string">'shares'</span>])
+ax2.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax2.set_xlabel(<span class="hljs-string">'Log of the Number of Words in Article'</span>, fontsize=<span class="hljs-number">14</span>)
+ax2.set_ylabel(<span class="hljs-string">'Number of Shares'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-9.png" alt=""></img></p>
 <p><strong>Figure 2-9. Scatter plot of number of words (input) vs. number of shares (target) in the Online News dataset. The top plot visualizes the original feature, and the bottom plot shows the scatter plot after log transformation.</strong></p>
 <p>将此与应用于YELP评论数据集的相同散点图进行比较。图2-10看起来与图2-9非常不同。在1到5，步长0.5的区间，平均星级是离散的。高评论计数（大致＞2500评论）与较高的平均星级评级相关。但这种关系远不是线性的。没有一种清晰的方法可以根据输入来预测平均星级。从本质上讲，该图表明，评论数及其对数都是平均星级的不良线性预测因子。</p>
 <h3 id="例2-11。可视化-yelp-商户评论预测中输入与输出的相关性。">例2-11。可视化 Yelp 商户评论预测中输入与输出的相关性。</h3>
-<pre><code>fig, (ax1, ax2) = plt.subplots(2,1)
-ax1.scatter(biz_df['review_count'], biz_df['stars'])
-ax1.tick_params(labelsize=14)
-ax1.set_xlabel('Review Count', fontsize=14)
-ax1.set_ylabel('Average Star Rating', fontsize=14)
+<pre><code class="lang-python">fig, (ax1, ax2) = plt.subplots(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)
+ax1.scatter(biz_df[<span class="hljs-string">'review_count'</span>], biz_df[<span class="hljs-string">'stars'</span>])
+ax1.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax1.set_xlabel(<span class="hljs-string">'Review Count'</span>, fontsize=<span class="hljs-number">14</span>)
+ax1.set_ylabel(<span class="hljs-string">'Average Star Rating'</span>, fontsize=<span class="hljs-number">14</span>)
 
-ax2.scatter(biz_df['log_review_count'], biz_df['stars'])
-ax2.tick_params(labelsize=14)
-ax2.set_xlabel('Log of Review Count', fontsize=14)
-ax2.set_ylabel('Average Star Rating', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-10.png" alt=""></img></p>
+ax2.scatter(biz_df[<span class="hljs-string">'log_review_count'</span>], biz_df[<span class="hljs-string">'stars'</span>])
+ax2.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax2.set_xlabel(<span class="hljs-string">'Log of Review Count'</span>, fontsize=<span class="hljs-number">14</span>)
+ax2.set_ylabel(<span class="hljs-string">'Average Star Rating'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-10.png" alt=""></img></p>
 <p><strong>Figure 2-10. Scatter plot of review counts (input) vs. average star ratings (target) in the Yelp Reviews dataset. The top panel plots the original review count, and the bottom panel plots the review count after log transformation.</strong></p>
 <h2 id="数据可视化的重要性">数据可视化的重要性</h2>
 <p>对数变换在两个不同数据集上的影响的比较，说明了可视化数据的重要性。在这里，我们故意保持输入和目标变量简单，以便我们可以很容易地可视化它们之间的关系。如图2-10所示的曲线，立即显示所选择的模型（线性）不可能代表所选择的输入和目标之间的关系。另一方面，人们可以令人信服地在给定平均星级模拟评论数的分布。在建立模型时，最好直观地检查输入和输出之间的关系，以及不同输入特征之间的关系。</p>
@@ -556,63 +567,66 @@ ax2.set_ylabel('Average Star Rating', fontsize=14)
 <p><strong>Figure 2-12. Box-Cox transforms for different values of λ.</strong></p>
 <p>只有当数据为正值时, Box-Cox 公式才能工作。对于非正数据, 可以通过加上固定常量来移动数值。当应用 Box-Cox 变换或更一般的功率变换时, 我们必须确定参数 λ 的值。这可能是通过最大似然(找到的λ,使产生的变换信号的高斯似然最大) 或贝叶斯方法。完全介绍 Box-Cox 和一般功率变换的使用超出了本书的范围。感兴趣的读者可以通过 Jack Johnston 和John DiNardo (McGraw Hill) 编写的Econometric Methods 找到更多关于幂转换的信息。幸运的是, Scipy 的数据包包含了一个 Box-Cox 转换的实现, 其中包括查找最佳变换参数。</p>
 <h3 id="例子2-12。yelp商户评论数的-box-cox-变换。">例子2-12。Yelp商户评论数的 Box-Cox 变换。</h3>
-<pre><code>&gt;&gt;&gt; from scipy import stats
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> scipy <span class="hljs-keyword">import</span> stats
 
-# Continuing from the previous example, assume biz_df contains
-# the Yelp business reviews data
-# Box-Cox transform assumes that input data is positive.
-# Check the min to make sure.
-&gt;&gt;&gt; biz_df['review_count'].min()
-3
+<span class="hljs-comment"># Continuing from the previous example, assume biz_df contains</span>
+<span class="hljs-comment"># the Yelp business reviews data</span>
+<span class="hljs-comment"># Box-Cox transform assumes that input data is positive.</span>
+<span class="hljs-comment"># Check the min to make sure.</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>biz_df[<span class="hljs-string">'review_count'</span>].<span class="hljs-built_in">min</span>()
+<span class="hljs-number">3</span>
 
-# Setting input parameter lmbda to 0 gives us the log transform (without constant offset)
-&gt;&gt;&gt; rc_log = stats.boxcox(biz_df['review_count'], lmbda=0)
-# By default, the scipy implementation of Box-Cox transform finds the lmbda parameter
-# that will make the output the closest to a normal distribution
-&gt;&gt;&gt; rc_bc, bc_params = stats.boxcox(biz_df['review_count'])
-&gt;&gt;&gt; bc_params
--0.4106510862321085
-</code></pre><p>图2-13 提供了原始和转换评论数分布的可视化比较。</p>
+<span class="hljs-comment"># Setting input parameter lmbda to 0 gives us the log transform (without constant offset)</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>rc_log = stats.boxcox(biz_df[<span class="hljs-string">'review_count'</span>], lmbda=<span class="hljs-number">0</span>)
+<span class="hljs-comment"># By default, the scipy implementation of Box-Cox transform finds the lmbda parameter</span>
+<span class="hljs-comment"># that will make the output the closest to a normal distribution</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>rc_bc, bc_params = stats.boxcox(biz_df[<span class="hljs-string">'review_count'</span>])
+<span class="hljs-meta">&gt;&gt;&gt; </span>bc_params
+-<span class="hljs-number">0.4106510862321085</span>
+</code></pre>
+<p>图2-13 提供了原始和转换评论数分布的可视化比较。</p>
 <h3 id="例2-13。可视化评论数的原始、对数转换和-box-cox-转换的直方图。">例2-13。可视化评论数的原始、对数转换和 Box-Cox 转换的直方图。</h3>
-<pre><code>fig, (ax1, ax2, ax3) = plt.subplots(3,1)
-# original review count histogram
-biz_df['review_count'].hist(ax=ax1, bins=100)
-ax1.set_yscale('log')
-ax1.tick_params(labelsize=14)
-ax1.set_title('Review Counts Histogram', fontsize=14)
-ax1.set_xlabel('')
-ax1.set_ylabel('Occurrence', fontsize=14)
+<pre><code class="lang-python">fig, (ax1, ax2, ax3) = plt.subplots(<span class="hljs-number">3</span>,<span class="hljs-number">1</span>)
+<span class="hljs-comment"># original review count histogram</span>
+biz_df[<span class="hljs-string">'review_count'</span>].hist(ax=ax1, bins=<span class="hljs-number">100</span>)
+ax1.set_yscale(<span class="hljs-string">'log'</span>)
+ax1.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax1.set_title(<span class="hljs-string">'Review Counts Histogram'</span>, fontsize=<span class="hljs-number">14</span>)
+ax1.set_xlabel(<span class="hljs-string">''</span>)
+ax1.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
 
-# review count after log transform
-biz_df['rc_log'].hist(ax=ax2, bins=100)
-ax2.set_yscale('log')
-ax2.tick_params(labelsize=14)
-ax2.set_title('Log Transformed Counts Histogram', fontsize=14)
-ax2.set_xlabel('')
-ax2.set_ylabel('Occurrence', fontsize=14)
+<span class="hljs-comment"># review count after log transform</span>
+biz_df[<span class="hljs-string">'rc_log'</span>].hist(ax=ax2, bins=<span class="hljs-number">100</span>)
+ax2.set_yscale(<span class="hljs-string">'log'</span>)
+ax2.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax2.set_title(<span class="hljs-string">'Log Transformed Counts Histogram'</span>, fontsize=<span class="hljs-number">14</span>)
+ax2.set_xlabel(<span class="hljs-string">''</span>)
+ax2.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
 
-# review count after optimal Box-Cox transform
-biz_df['rc_bc'].hist(ax=ax3, bins=100)
-ax3.set_yscale('log')
-ax3.tick_params(labelsize=14)
-ax3.set_title('Box-Cox Transformed Counts Histogram', fontsize=14)
-ax3.set_xlabel('')
-ax3.set_ylabel('Occurrence', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-13.png" alt=""></img></p>
+<span class="hljs-comment"># review count after optimal Box-Cox transform</span>
+biz_df[<span class="hljs-string">'rc_bc'</span>].hist(ax=ax3, bins=<span class="hljs-number">100</span>)
+ax3.set_yscale(<span class="hljs-string">'log'</span>)
+ax3.tick_params(labelsize=<span class="hljs-number">14</span>)
+ax3.set_title(<span class="hljs-string">'Box-Cox Transformed Counts Histogram'</span>, fontsize=<span class="hljs-number">14</span>)
+ax3.set_xlabel(<span class="hljs-string">''</span>)
+ax3.set_ylabel(<span class="hljs-string">'Occurrence'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-13.png" alt=""></img></p>
 <p><strong>Figure 2-13. Box-Cox transformation of Yelp business review counts.</strong></p>
 <p>概率图是一种直观地比较数据分布与理论分布的简单方法。这本质上是观察到散点图的与理论分位数。图2-14显示YELP评论数的原始数据和转换后数据相对正态分布的概率图。由于观测数据是严格正的，高斯可以是负的，所以分位数在负端上永远不会匹配。所以我们关注的是正数这的一边。在这方面，原始评论数明显比正常分布更重尾。（有序值上升到4000，而理论位数仅延伸到4）。简单的对数变换和最优的 Box-Cox 变换都使正尾部接近正态分布。最优的 Box-Cox 变换比对数变换更缩小尾部，由于尾部在红色对角线等值线下平展可以明显看出。</p>
 <h3 id="例子-2-14。原始和变换后的数据相对正态分布的概率图。">例子 2-14。原始和变换后的数据相对正态分布的概率图。</h3>
-<pre><code>fig2, (ax1, ax2, ax3) = plt.subplots(3,1)
-prob1 = stats.probplot(biz_df['review_count'], dist=stats.norm, plot=ax1)
-ax1.set_xlabel('')
-ax1.set_title('Probplot against normal distribution')
-prob2 = stats.probplot(biz_df['rc_log'], dist=stats.norm, plot=ax2)
-ax2.set_xlabel('')
-ax2.set_title('Probplot after log transform')
-prob3 = stats.probplot(biz_df['rc_bc'], dist=stats.norm, plot=ax3)
-ax3.set_xlabel('Theoretical quantiles')
-ax3.set_title('Probplot after Box-Cox transform')
-</code></pre><p><img src="images/chapter2/2-14.png" alt=""></img></p>
+<pre><code class="lang-python">fig2, (ax1, ax2, ax3) = plt.subplots(<span class="hljs-number">3</span>,<span class="hljs-number">1</span>)
+prob1 = stats.probplot(biz_df[<span class="hljs-string">'review_count'</span>], dist=stats.norm, plot=ax1)
+ax1.set_xlabel(<span class="hljs-string">''</span>)
+ax1.set_title(<span class="hljs-string">'Probplot against normal distribution'</span>)
+prob2 = stats.probplot(biz_df[<span class="hljs-string">'rc_log'</span>], dist=stats.norm, plot=ax2)
+ax2.set_xlabel(<span class="hljs-string">''</span>)
+ax2.set_title(<span class="hljs-string">'Probplot after log transform'</span>)
+prob3 = stats.probplot(biz_df[<span class="hljs-string">'rc_bc'</span>], dist=stats.norm, plot=ax3)
+ax3.set_xlabel(<span class="hljs-string">'Theoretical quantiles'</span>)
+ax3.set_title(<span class="hljs-string">'Probplot after Box-Cox transform'</span>)
+</code></pre>
+<p><img src="images/chapter2/2-14.png" alt=""></img></p>
 <p><strong>Figure 2-14. Comparing the distribution of raw and transformed review counts against the Normal distribution.</strong></p>
 <h2 id="特征缩放或归一化">特征缩放或归一化</h2>
 <p>某些特征的值有界的，如纬度或经度。其他数值特征 (如数量) 可能会在无界的情况下增加。那些关于输入是平滑函数的模型, 如线性回归、逻辑回归或任何涉及矩阵的东西, 都受输入的数值范围影响。另一方面, 基于树的模型不太在意这个。如果你的模型对输入特征的数值范围敏感, 则特征缩放可能会有所帮助。顾名思义, 特征缩放会更改特征值的数值范围。有时人们也称它为特征规范化。功能缩放通常分别针对单个特征进行。有几种常见的缩放操作, 每个类型都产生不同的特征值分布。</p>
@@ -640,58 +654,60 @@ ax3.set_title('Probplot after Box-Cox transform')
 <h2 id="数据空间与特征空间">数据空间与特征空间</h2>
 <p>请注意，图2-17中的说明是在数据空间中，而不是特征空间。还可以对数据点进行L2归一化，而不是特征，这将导致具有单位范数（范数为1）的数据向量。（参见<a href="https://www.safaribooksonline.com/library/view/feature-engineering-for/9781491953235/ch03.html#sec-bag-of-words" target="_blank">词袋</a>中关于数据向量和特征向量的互补性质的讨论）不管缩放方法如何，特征缩放总是将特征除以常数（也称为归一化常数）。因此，它不会改变单特征分布的形状。我们将用在线新闻文章标记计数来说明这一点。</p>
 <h3 id="例子-2-15。特征缩放示例。">例子 2-15。特征缩放示例。</h3>
-<pre><code>&gt;&gt;&gt; import pandas as pd
-&gt;&gt;&gt; import sklearn.preprocessing as preproc
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> sklearn.preprocessing <span class="hljs-keyword">as</span> preproc
 
-# Load the online news popularity dataset
-&gt;&gt;&gt; df = pd.read_csv('OnlineNewsPopularity.csv', delimiter=', ')
+<span class="hljs-comment"># Load the online news popularity dataset</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df = pd.read_csv(<span class="hljs-string">'OnlineNewsPopularity.csv'</span>, delimiter=<span class="hljs-string">', '</span>)
 
-# Look at the original data - the number of words in an article
-&gt;&gt;&gt; df['n_tokens_content'].as_matrix()
-array([ 219., 255., 211., ..., 442., 682., 157.])
+<span class="hljs-comment"># Look at the original data - the number of words in an article</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'n_tokens_content'</span>].as_matrix()
+array([ <span class="hljs-number">219.</span>, <span class="hljs-number">255.</span>, <span class="hljs-number">211.</span>, ..., <span class="hljs-number">442.</span>, <span class="hljs-number">682.</span>, <span class="hljs-number">157.</span>])
 
-# Min-max scaling
-&gt;&gt;&gt; df['minmax'] = preproc.minmax_scale(df[['n_tokens_content']])
-&gt;&gt;&gt; df['minmax'].as_matrix()
-array([ 0.02584376, 0.03009205, 0.02489969, ..., 0.05215955, 
-        0.08048147, 0.01852726])
+<span class="hljs-comment"># Min-max scaling</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'minmax'</span>] = preproc.minmax_scale(df[[<span class="hljs-string">'n_tokens_content'</span>]])
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'minmax'</span>].as_matrix()
+array([ <span class="hljs-number">0.02584376</span>, <span class="hljs-number">0.03009205</span>, <span class="hljs-number">0.02489969</span>, ..., <span class="hljs-number">0.05215955</span>, 
+        <span class="hljs-number">0.08048147</span>, <span class="hljs-number">0.01852726</span>])
 
-# Standardization - note that by definition, some outputs will be negative
-&gt;&gt;&gt; df['standardized'] = preproc.StandardScaler().fit_transform(df[['n_tokens_content']])
-&gt;&gt;&gt; df['standardized'].as_matrix()
-array([-0.69521045, -0.61879381, -0.71219192, ..., -0.2218518 ,
-        0.28759248, -0.82681689])
+<span class="hljs-comment"># Standardization - note that by definition, some outputs will be negative</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'standardized'</span>] = preproc.StandardScaler().fit_transform(df[[<span class="hljs-string">'n_tokens_content'</span>]])
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'standardized'</span>].as_matrix()
+array([-<span class="hljs-number">0.69521045</span>, -<span class="hljs-number">0.61879381</span>, -<span class="hljs-number">0.71219192</span>, ..., -<span class="hljs-number">0.2218518</span> ,
+        <span class="hljs-number">0.28759248</span>, -<span class="hljs-number">0.82681689</span>])
 
-# L2-normalization
-&gt;&gt;&gt; df['l2_normalized'] = preproc.normalize(df[['n_tokens_content']], axis=0)
-&gt;&gt;&gt; df['l2_normalized'].as_matrix()
-array([ 0.00152439, 0.00177498, 0.00146871, ..., 0.00307663,
-        0.0047472 , 0.00109283])
-</code></pre><p>我们也可以可视化用不同的特征缩放方法后的数据的分布。如图2-18所示，与对数变换不同，特征缩放不会改变分布的形状；只有数据的规模发生变化。</p>
+<span class="hljs-comment"># L2-normalization</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'l2_normalized'</span>] = preproc.normalize(df[[<span class="hljs-string">'n_tokens_content'</span>]], axis=<span class="hljs-number">0</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'l2_normalized'</span>].as_matrix()
+array([ <span class="hljs-number">0.00152439</span>, <span class="hljs-number">0.00177498</span>, <span class="hljs-number">0.00146871</span>, ..., <span class="hljs-number">0.00307663</span>,
+        <span class="hljs-number">0.0047472</span> , <span class="hljs-number">0.00109283</span>])
+</code></pre>
+<p>我们也可以可视化用不同的特征缩放方法后的数据的分布。如图2-18所示，与对数变换不同，特征缩放不会改变分布的形状；只有数据的规模发生变化。</p>
 <h3 id="例2-16。绘制原始数据和缩放数据的直方图。">例2-16。绘制原始数据和缩放数据的直方图。</h3>
-<pre><code>&gt;&gt;&gt; fig, (ax1, ax2, ax3, ax4) = plt.subplots(4,1)
-&gt;&gt;&gt; fig.tight_layout()
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>fig, (ax1, ax2, ax3, ax4) = plt.subplots(<span class="hljs-number">4</span>,<span class="hljs-number">1</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>fig.tight_layout()
 
-&gt;&gt;&gt; df['n_tokens_content'].hist(ax=ax1, bins=100)
-&gt;&gt;&gt; ax1.tick_params(labelsize=14)
-&gt;&gt;&gt; ax1.set_xlabel('Article word count', fontsize=14)
-&gt;&gt;&gt; ax1.set_ylabel('Number of articles', fontsize=14)
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'n_tokens_content'</span>].hist(ax=ax1, bins=<span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.tick_params(labelsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.set_xlabel(<span class="hljs-string">'Article word count'</span>, fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.set_ylabel(<span class="hljs-string">'Number of articles'</span>, fontsize=<span class="hljs-number">14</span>)
 
-&gt;&gt;&gt; df['minmax'].hist(ax=ax2, bins=100)
-&gt;&gt;&gt; ax2.tick_params(labelsize=14)
-&gt;&gt;&gt; ax2.set_xlabel('Min-max scaled word count', fontsize=14)
-&gt;&gt;&gt; ax2.set_ylabel('Number of articles', fontsize=14)
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'minmax'</span>].hist(ax=ax2, bins=<span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax2.tick_params(labelsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax2.set_xlabel(<span class="hljs-string">'Min-max scaled word count'</span>, fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax2.set_ylabel(<span class="hljs-string">'Number of articles'</span>, fontsize=<span class="hljs-number">14</span>)
 
-&gt;&gt;&gt; df['standardized'].hist(ax=ax3, bins=100)
-&gt;&gt;&gt; ax3.tick_params(labelsize=14)
-&gt;&gt;&gt; ax3.set_xlabel('Standardized word count', fontsize=14)
-&gt;&gt;&gt; ax3.set_ylabel('Number of articles', fontsize=14)
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'standardized'</span>].hist(ax=ax3, bins=<span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax3.tick_params(labelsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax3.set_xlabel(<span class="hljs-string">'Standardized word count'</span>, fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax3.set_ylabel(<span class="hljs-string">'Number of articles'</span>, fontsize=<span class="hljs-number">14</span>)
 
-&gt;&gt;&gt; df['l2_normalized'].hist(ax=ax4, bins=100)
-&gt;&gt;&gt; ax4.tick_params(labelsize=14)
-&gt;&gt;&gt; ax4.set_xlabel('L2-normalized word count', fontsize=14)
-&gt;&gt;&gt; ax4.set_ylabel('Number of articles', fontsize=14)
-</code></pre><p><img src="images/chapter2/2-18.png" alt=""></img></p>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df[<span class="hljs-string">'l2_normalized'</span>].hist(ax=ax4, bins=<span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax4.tick_params(labelsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax4.set_xlabel(<span class="hljs-string">'L2-normalized word count'</span>, fontsize=<span class="hljs-number">14</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>ax4.set_ylabel(<span class="hljs-string">'Number of articles'</span>, fontsize=<span class="hljs-number">14</span>)
+</code></pre>
+<p><img src="images/chapter2/2-18.png" alt=""></img></p>
 <p><strong>Figure 2-18. Original and scaled news article word counts. Note that only the scale of the x-axis changes; the shape of the distribution stays the same with feature scaling.</strong></p>
 <p>在一组输入特征在比例上差异很大的情况下，特征缩放非常有用。例如，一个流行的电子商务网站的每日访问者数量可能是十万，而实际销售额可能是几千。如果这两种功能都投入到模型中，那么该模型需要在确定要做什么的同时平衡它们的规模。输入特征的极大变化会导致模型训练算法的数值稳定性问题。在这些情况下，标准化功能是个好主意。第4章将详细介绍处理自然文本时的特征缩放，包括使用示例。</p>
 <h2 id="交互特征">交互特征</h2>
@@ -703,69 +719,70 @@ array([ 0.00152439, 0.00177498, 0.00146871, ..., 0.00307663,
 <p>这使我们能够捕获特征之间的相互影响，因此它们被称为交互特征。如果x1和x2是二元的，那么它们的积 x1x2 是逻辑函数 x1 AND x2 假设问题是根据他或她的个人资料信息预测客户的偏好。在这种情况下，交互特征不是仅基于用户的年龄或位置进行预测，而交互特征允许模型基于具有特定年龄和特定位置的用户进行预测。</p>
 <p>在例2-17中，我们使用 UCI 在线新闻数据集中的成对交互特征来预测每篇新闻文章的分享数量。交互特征导致精度超过单身特征。两者都比例2-9表现得更好，它使用文章正文中单词数的单个预测器（有或没有经过对数变换）。</p>
 <h3 id="例子-2--17。用于预测的交互特征示例。">例子 2--17。用于预测的交互特征示例。</h3>
-<pre><code>&gt;&gt;&gt; from sklearn import linear_model
-&gt;&gt;&gt; from sklearn.model_selection import train_test_split
-&gt;&gt;&gt; import sklearn.preprocessing as preproc
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> sklearn <span class="hljs-keyword">import</span> linear_model
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> sklearn.model_selection <span class="hljs-keyword">import</span> train_test_split
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> sklearn.preprocessing <span class="hljs-keyword">as</span> preproc
 
-### Assume df is a Pandas dataframe containing the UCI online news dataset
-&gt;&gt;&gt; df.columns
-Index(['url', 'timedelta', 'n_tokens_title', 'n_tokens_content',
-            'n_unique_tokens', 'n_non_stop_words', 'n_non_stop_unique_tokens',
-            'num_hrefs', 'num_self_hrefs', 'num_imgs', 'num_videos',
-            'average_token_length', 'num_keywords', 'data_channel_is_lifestyle',
-            'data_channel_is_entertainment', 'data_channel_is_bus',
-            'data_channel_is_socmed', 'data_channel_is_tech',
-            'data_channel_is_world', 'kw_min_min', 'kw_max_min', 'kw_avg_min',
-            'kw_min_max', 'kw_max_max', 'kw_avg_max', 'kw_min_avg', 'kw_max_avg',
-            'kw_avg_avg', 'self_reference_min_shares', 'self_reference_max_shares',
-            'self_reference_avg_sharess', 'weekday_is_monday', 'weekday_is_tuesday',
-            'weekday_is_wednesday', 'weekday_is_thursday', 'weekday_is_friday',
-            'weekday_is_saturday', 'weekday_is_sunday', 'is_weekend', 'LDA_00',
-            'LDA_01', 'LDA_02', 'LDA_03', 'LDA_04', 'global_subjectivity',
-            'global_sentiment_polarity', 'global_rate_positive_words',
-            'global_rate_negative_words', 'rate_positive_words',
-            'rate_negative_words', 'avg_positive_polarity', 'min_positive_polarity',
-            'max_positive_polarity', 'avg_negative_polarity',
-            'min_negative_polarity', 'max_negative_polarity', 'title_subjectivity',
-            'title_sentiment_polarity', 'abs_title_subjectivity',
-            'abs_title_sentiment_polarity', 'shares'],
-        dtype='object')
+<span class="hljs-comment">### Assume df is a Pandas dataframe containing the UCI online news dataset</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>df.columns
+Index([<span class="hljs-string">'url'</span>, <span class="hljs-string">'timedelta'</span>, <span class="hljs-string">'n_tokens_title'</span>, <span class="hljs-string">'n_tokens_content'</span>,
+            <span class="hljs-string">'n_unique_tokens'</span>, <span class="hljs-string">'n_non_stop_words'</span>, <span class="hljs-string">'n_non_stop_unique_tokens'</span>,
+            <span class="hljs-string">'num_hrefs'</span>, <span class="hljs-string">'num_self_hrefs'</span>, <span class="hljs-string">'num_imgs'</span>, <span class="hljs-string">'num_videos'</span>,
+            <span class="hljs-string">'average_token_length'</span>, <span class="hljs-string">'num_keywords'</span>, <span class="hljs-string">'data_channel_is_lifestyle'</span>,
+            <span class="hljs-string">'data_channel_is_entertainment'</span>, <span class="hljs-string">'data_channel_is_bus'</span>,
+            <span class="hljs-string">'data_channel_is_socmed'</span>, <span class="hljs-string">'data_channel_is_tech'</span>,
+            <span class="hljs-string">'data_channel_is_world'</span>, <span class="hljs-string">'kw_min_min'</span>, <span class="hljs-string">'kw_max_min'</span>, <span class="hljs-string">'kw_avg_min'</span>,
+            <span class="hljs-string">'kw_min_max'</span>, <span class="hljs-string">'kw_max_max'</span>, <span class="hljs-string">'kw_avg_max'</span>, <span class="hljs-string">'kw_min_avg'</span>, <span class="hljs-string">'kw_max_avg'</span>,
+            <span class="hljs-string">'kw_avg_avg'</span>, <span class="hljs-string">'self_reference_min_shares'</span>, <span class="hljs-string">'self_reference_max_shares'</span>,
+            <span class="hljs-string">'self_reference_avg_sharess'</span>, <span class="hljs-string">'weekday_is_monday'</span>, <span class="hljs-string">'weekday_is_tuesday'</span>,
+            <span class="hljs-string">'weekday_is_wednesday'</span>, <span class="hljs-string">'weekday_is_thursday'</span>, <span class="hljs-string">'weekday_is_friday'</span>,
+            <span class="hljs-string">'weekday_is_saturday'</span>, <span class="hljs-string">'weekday_is_sunday'</span>, <span class="hljs-string">'is_weekend'</span>, <span class="hljs-string">'LDA_00'</span>,
+            <span class="hljs-string">'LDA_01'</span>, <span class="hljs-string">'LDA_02'</span>, <span class="hljs-string">'LDA_03'</span>, <span class="hljs-string">'LDA_04'</span>, <span class="hljs-string">'global_subjectivity'</span>,
+            <span class="hljs-string">'global_sentiment_polarity'</span>, <span class="hljs-string">'global_rate_positive_words'</span>,
+            <span class="hljs-string">'global_rate_negative_words'</span>, <span class="hljs-string">'rate_positive_words'</span>,
+            <span class="hljs-string">'rate_negative_words'</span>, <span class="hljs-string">'avg_positive_polarity'</span>, <span class="hljs-string">'min_positive_polarity'</span>,
+            <span class="hljs-string">'max_positive_polarity'</span>, <span class="hljs-string">'avg_negative_polarity'</span>,
+            <span class="hljs-string">'min_negative_polarity'</span>, <span class="hljs-string">'max_negative_polarity'</span>, <span class="hljs-string">'title_subjectivity'</span>,
+            <span class="hljs-string">'title_sentiment_polarity'</span>, <span class="hljs-string">'abs_title_subjectivity'</span>,
+            <span class="hljs-string">'abs_title_sentiment_polarity'</span>, <span class="hljs-string">'shares'</span>],
+        dtype=<span class="hljs-string">'object'</span>)
 
-### Select the content-based features as singleton features in the model,
-### skipping over the derived features
-features = ['n_tokens_title', 'n_tokens_content',
-            'n_unique_tokens', 'n_non_stop_words', 'n_non_stop_unique_tokens',
-            'num_hrefs', 'num_self_hrefs', 'num_imgs', 'num_videos',
-            'average_token_length', 'num_keywords', 'data_channel_is_lifestyle',
-            'data_channel_is_entertainment', 'data_channel_is_bus',
-            'data_channel_is_socmed', 'data_channel_is_tech',
-            'data_channel_is_world']
+<span class="hljs-comment">### Select the content-based features as singleton features in the model,</span>
+<span class="hljs-comment">### skipping over the derived features</span>
+features = [<span class="hljs-string">'n_tokens_title'</span>, <span class="hljs-string">'n_tokens_content'</span>,
+            <span class="hljs-string">'n_unique_tokens'</span>, <span class="hljs-string">'n_non_stop_words'</span>, <span class="hljs-string">'n_non_stop_unique_tokens'</span>,
+            <span class="hljs-string">'num_hrefs'</span>, <span class="hljs-string">'num_self_hrefs'</span>, <span class="hljs-string">'num_imgs'</span>, <span class="hljs-string">'num_videos'</span>,
+            <span class="hljs-string">'average_token_length'</span>, <span class="hljs-string">'num_keywords'</span>, <span class="hljs-string">'data_channel_is_lifestyle'</span>,
+            <span class="hljs-string">'data_channel_is_entertainment'</span>, <span class="hljs-string">'data_channel_is_bus'</span>,
+            <span class="hljs-string">'data_channel_is_socmed'</span>, <span class="hljs-string">'data_channel_is_tech'</span>,
+            <span class="hljs-string">'data_channel_is_world'</span>]
 
-&gt;&gt;&gt; X = df[features]
-&gt;&gt;&gt; y = df[['shares']]
+<span class="hljs-meta">&gt;&gt;&gt; </span>X = df[features]
+<span class="hljs-meta">&gt;&gt;&gt; </span>y = df[[<span class="hljs-string">'shares'</span>]]
 
-### Create pairwise interaction features, skipping the constant bias term
-&gt;&gt;&gt; X2 = preproc.PolynomialFeatures(include_bias=False).fit_transform(X)
-&gt;&gt;&gt; X2.shape
-(39644, 170)
+<span class="hljs-comment">### Create pairwise interaction features, skipping the constant bias term</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>X2 = preproc.PolynomialFeatures(include_bias=<span class="hljs-literal">False</span>).fit_transform(X)
+<span class="hljs-meta">&gt;&gt;&gt; </span>X2.shape
+(<span class="hljs-number">39644</span>, <span class="hljs-number">170</span>)
 
-### Create train/test sets for both feature sets
-&gt;&gt;&gt; X1_train, X1_test, X2_train, X2_test, y_train, y_test = train_test_split(X, X2, y, test_size=0.3, random_state=123)
+<span class="hljs-comment">### Create train/test sets for both feature sets</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>X1_train, X1_test, X2_train, X2_test, y_train, y_test = train_test_split(X, X2, y, test_size=<span class="hljs-number">0.3</span>, random_state=<span class="hljs-number">123</span>)
 
-&gt;&gt;&gt; def evaluate_feature(X_train, X_test, y_train, y_test):
-...     '''Fit a linear regression model on the training set and score on the test set'''
-...     model = linear_model.LinearRegression().fit(X_train, y_train)
-...     r_score = model.score(X_test, y_test)
-...     return (model, r_score)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate_feature</span>(<span class="hljs-params">X_train, X_test, y_train, y_test</span>):
+<span class="hljs-meta">... </span>    <span class="hljs-string">'''Fit a linear regression model on the training set and score on the test set'''</span>
+<span class="hljs-meta">... </span>    model = linear_model.LinearRegression().fit(X_train, y_train)
+<span class="hljs-meta">... </span>    r_score = model.score(X_test, y_test)
+<span class="hljs-meta">... </span>    <span class="hljs-keyword">return</span> (model, r_score)
 
-### Train models and compare score on the two feature sets
-&gt;&gt;&gt; (m1, r1) = evaluate_feature(X1_train, X1_test, y_train, y_test)
-&gt;&gt;&gt; (m2, r2) = evaluate_feature(X2_train, X2_test, y_train, y_test)
-&gt;&gt;&gt; print("R-squared score with singleton features: %0.5f" % r1)
-&gt;&gt;&gt; print("R-squared score with pairwise features: %0.10f" % r2)
-R-squared score with singleton features: 0.00924
-R-squared score with pairwise features: 0.0113276523
-</code></pre><p>构造交互特征非常简单，但它们使用起来很昂贵。使用成对交互特征的线性模型的训练和得分时间将从O（n）到O（n2），其中n是单身特征的数量。</p>
+<span class="hljs-comment">### Train models and compare score on the two feature sets</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>(m1, r1) = evaluate_feature(X1_train, X1_test, y_train, y_test)
+<span class="hljs-meta">&gt;&gt;&gt; </span>(m2, r2) = evaluate_feature(X2_train, X2_test, y_train, y_test)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">print</span>(<span class="hljs-string">"R-squared score with singleton features: %0.5f"</span> % r1)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">print</span>(<span class="hljs-string">"R-squared score with pairwise features: %0.10f"</span> % r2)
+R-squared score <span class="hljs-keyword">with</span> singleton features: <span class="hljs-number">0.00924</span>
+R-squared score <span class="hljs-keyword">with</span> pairwise features: <span class="hljs-number">0.0113276523</span>
+</code></pre>
+<p>构造交互特征非常简单，但它们使用起来很昂贵。使用成对交互特征的线性模型的训练和得分时间将从O（n）到O（n2），其中n是单身特征的数量。</p>
 <p>围绕高阶交互特征的计算成本有几种方法。可以在所有交互特征之上执行特征选择，选择前几个。或者，可以更仔细地制作更少数量的复杂特征。两种策略都有其优点和缺点。特征选择采用计算手段来选择问题的最佳特征。（这种技术不限于交互特征。）一些特征选择技术仍然需要训练多个具有大量特征的模型。</p>
 <p>手工制作的复杂特征可以具有足够的表现力，所以只需要少量这些特征，这可以缩短模型的训练时间。但是特征本身的计算可能很昂贵，这增加了模型评分阶段的计算成本。手工制作（或机器学习）的复杂特征的好例子可以在第8章有关图像特征中找到。现在让我们看看一些特征选择技巧。</p>
 <h2 id="特征选择">特征选择</h2>
@@ -823,7 +840,7 @@ R-squared score with pairwise features: 0.0113276523
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"二、简单数字的奇特技巧","level":"1.3","depth":1,"next":{"title":"三、文本数据：展开、过滤和分块","level":"1.4","depth":1,"path":"3.文本数据.md","ref":"./3.文本数据.md","articles":[]},"previous":{"title":"一、引言","level":"1.2","depth":1,"path":"1.引言.md","ref":"./1.引言.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"2.简单数字的奇特技巧.md","mtime":"2024-08-24T12:46:14.091Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-08-24T12:50:39.023Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"二、简单数字的奇特技巧","level":"1.3","depth":1,"next":{"title":"三、文本数据：展开、过滤和分块","level":"1.4","depth":1,"path":"3.文本数据.md","ref":"./3.文本数据.md","articles":[]},"previous":{"title":"一、引言","level":"1.2","depth":1,"path":"1.引言.md","ref":"./1.引言.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"2.简单数字的奇特技巧.md","mtime":"2025-01-05T17:59:25.889Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-05T17:59:35.861Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

@@ -6,7 +6,7 @@
         <title>八、自动化特征提取器：图像特征提取和深度学习 · HonKit</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="HonKit 5.1.4">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -49,7 +49,7 @@
     
     
     <meta name="HandheldFriendly" content="true"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
@@ -307,45 +307,45 @@
 <p>它们能在真实的图像上发挥作用吗？在例 8-1 中，我们使用图 8-4 所示的猫的水平和垂直梯度上来实验。由于梯度是在原始图像的每个像素位置计算的，所以我们得到两个新的矩阵，每个矩阵可以被可视化为图像。</p>
 <p><img src="images/chapter8/8-4.png" alt="图8-4"></img></p>
 <p>例 8-1</p>
-<pre><code class="lang-python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt 
-<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
-<span class="hljs-keyword">from</span> skimage <span class="hljs-keyword">import</span> data, color 
+<pre><code class="lang-pythonthon">import matplotlib.pyplot as plt 
+import numpy as np
+from skimage import data, color 
 
-<span class="hljs-comment"># Load the example image and turn it into grayscale </span>
+# Load the example image and turn it into grayscale 
 image = color.rgb2gray(data.chelsea()) 
 
-<span class="hljs-comment"># Compute the horizontal gradient using the centered 1D filter </span>
-<span class="hljs-comment"># This is equivalent to replacing each non-border pixel with the # difference between its right and left neighbors. The leftmost </span>
-<span class="hljs-comment"># and rightmost edges have a gradient of 0. </span>
+# Compute the horizontal gradient using the centered 1D filter 
+# This is equivalent to replacing each non-border pixel with the # difference between its right and left neighbors. The leftmost 
+# and rightmost edges have a gradient of 0. 
 gx = np.empty(image.shape, dtype=np.double) 
-gx[:, <span class="hljs-number">0</span>] = <span class="hljs-number">0</span> 
-gx[:, -<span class="hljs-number">1</span>] = <span class="hljs-number">0</span> 
+gx[:, 0] = 0 
+gx[:, -1] = 0 
 
-gx[:, <span class="hljs-number">1</span>:-<span class="hljs-number">1</span>] = image[:, :-<span class="hljs-number">2</span>] - image[:, <span class="hljs-number">2</span>:] 
+gx[:, 1:-1] = image[:, :-2] - image[:, 2:] 
 
-<span class="hljs-comment"># Same deal for the vertical gradient </span>
+# Same deal for the vertical gradient 
 gy = np.empty(image.shape, dtype=np.double) 
-gy[<span class="hljs-number">0</span>, :] = <span class="hljs-number">0</span> 
-gy[-<span class="hljs-number">1</span>, :] = <span class="hljs-number">0</span> 
-gy[<span class="hljs-number">1</span>:-<span class="hljs-number">1</span>, :] = image[:-<span class="hljs-number">2</span>, :] - image[<span class="hljs-number">2</span>:, :] 
+gy[0, :] = 0 
+gy[-1, :] = 0 
+gy[1:-1, :] = image[:-2, :] - image[2:, :] 
 
-<span class="hljs-comment"># Matplotlib incantations </span>
-fig, (ax1, ax2, ax3) = plt.subplots(<span class="hljs-number">3</span>, <span class="hljs-number">1</span>,figsize=(<span class="hljs-number">5</span>, <span class="hljs-number">9</span>),sharex=<span class="hljs-literal">True</span>,sharey=<span class="hljs-literal">True</span>) 
+# Matplotlib incantations 
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1,figsize=(5, 9),sharex=True,sharey=True) 
 
-ax1.axis(<span class="hljs-string">'off'</span>) 
+ax1.axis('off') 
 ax1.imshow(image, cmap=plt.cm.gray) 
-ax1.set_title(<span class="hljs-string">'Original image'</span>) 
-ax1.set_adjustable(<span class="hljs-string">'box-forced'</span>) 
+ax1.set_title('Original image') 
+ax1.set_adjustable('box-forced') 
 
-ax2.axis(<span class="hljs-string">'off'</span>) 
+ax2.axis('off') 
 ax2.imshow(gx, cmap=plt.cm.gray) 
-ax2.set_title(<span class="hljs-string">'Horizontal gradients'</span>) 
-ax2.set_adjustable(<span class="hljs-string">'box-forced'</span>) 
+ax2.set_title('Horizontal gradients') 
+ax2.set_adjustable('box-forced') 
 
-ax3.axis(<span class="hljs-string">'off'</span>) 
+ax3.axis('off') 
 ax3.imshow(gy, cmap=plt.cm.gray) 
-ax3.set_title(<span class="hljs-string">'Vertical gradients'</span>) 
-ax3.set_adjustable(<span class="hljs-string">'box-forced'</span>)
+ax3.set_title('Vertical gradients') 
+ax3.set_adjustable('box-forced')
 </code></pre>
 <p>注意，水平梯度提取出强烈的垂直模式，如猫眼睛的内边缘，而垂直梯度则提取强的水平模式，如晶须和眼睛的上下眼睑。这乍看起来似乎有些矛盾，如果我们仔细考虑一下，这还是有道理的。水平（X）梯度识别水平方向上的变化。强的垂直图案在大致相同的<code>X</code>位置上跨越多个<code>Y</code>像素。因此，垂直图案导致像素值的水平差异。这也是我们的眼睛也能察觉到的。</p>
 <h2 id="梯度方向直方图">梯度方向直方图</h2>
@@ -422,33 +422,33 @@ ax3.set_adjustable(<span class="hljs-string">'box-forced'</span>)
 <h3 id="卷积滤波器示例">卷积滤波器示例</h3>
 <p>在这个示例中，我们将高斯滤波器应用于图像。高斯函数在零附近形成光滑对称的图形。滤波器在附近函数值产生加权平均值。当应用于图像时，它具有模糊附近像素值的效果。二维高斯滤波器是由 <img src="images/chapter8/E8-10.png" alt="图E8-10"></img> 定义的，其中<code>σ</code>为高斯函数的标准差，它控制着图形的宽度。</p>
 <p>在下面的代码示例中，我们将首先创建二维高斯滤波器，然后将它与猫图像进行卷积以产生模糊的猫。注意，这不是计算高斯滤波器的最精确的方法，但它是最容易理解的。采取在每个离散点的加权平均值，而不是简单的点估计是更好的实现方法。</p>
-<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np 
+<pre><code class="lang-pythonthon">&gt;&gt;&gt; import numpy as np 
 
-<span class="hljs-comment"># First create X, Y meshgrids of size 5x5 on which we compute the Gaussian </span>
-<span class="hljs-meta">&gt;&gt;&gt; </span>ind = [-<span class="hljs-number">1.</span>, -<span class="hljs-number">0.5</span>, <span class="hljs-number">0.</span>, <span class="hljs-number">0.5</span>, <span class="hljs-number">1.</span>] 
-<span class="hljs-meta">&gt;&gt;&gt; </span>X,Y = np.meshgrid(ind, ind) 
-<span class="hljs-meta">&gt;&gt;&gt; </span>X array([[-<span class="hljs-number">1.</span> , -<span class="hljs-number">0.5</span>,  <span class="hljs-number">0.</span> ,  <span class="hljs-number">0.5</span>,  <span class="hljs-number">1.</span> ],        [-<span class="hljs-number">1.</span> , -<span class="hljs-number">0.5</span>,  <span class="hljs-number">0.</span> ,  <span class="hljs-number">0.5</span>,  <span class="hljs-number">1.</span> ],        [-<span class="hljs-number">1.</span> , -<span class="hljs-number">0.5</span>,  <span class="hljs-number">0.</span> ,  <span class="hljs-number">0.5</span>,  <span class="hljs-number">1.</span> ],        [-<span class="hljs-number">1.</span> , -<span class="hljs-number">0.5</span>,  <span class="hljs-number">0.</span> ,  <span class="hljs-number">0.5</span>,  <span class="hljs-number">1.</span> ],        [-<span class="hljs-number">1.</span> , -<span class="hljs-number">0.5</span>,  <span class="hljs-number">0.</span> ,  <span class="hljs-number">0.5</span>,  <span class="hljs-number">1.</span> ]]) 
+# First create X, Y meshgrids of size 5x5 on which we compute the Gaussian 
+&gt;&gt;&gt; ind = [-1., -0.5, 0., 0.5, 1.] 
+&gt;&gt;&gt; X,Y = np.meshgrid(ind, ind) 
+&gt;&gt;&gt; X array([[-1. , -0.5,  0. ,  0.5,  1. ],        [-1. , -0.5,  0. ,  0.5,  1. ],        [-1. , -0.5,  0. ,  0.5,  1. ],        [-1. , -0.5,  0. ,  0.5,  1. ],        [-1. , -0.5,  0. ,  0.5,  1. ]]) 
 
-<span class="hljs-comment"># G is a simple, unnormalized Gaussian kernel where the value at (0,0) is 1.0 </span>
-<span class="hljs-meta">&gt;&gt;&gt; </span>G = np.exp(-(np.multiply(X,X) + np.multiply(Y,Y))/<span class="hljs-number">2</span>) &gt;&gt;&gt; G array([[ <span class="hljs-number">0.36787944</span>,  <span class="hljs-number">0.53526143</span>,  <span class="hljs-number">0.60653066</span>,  <span class="hljs-number">0.53526143</span>,  <span class="hljs-number">0.36787944</span>],        [ <span class="hljs-number">0.53526143</span>,  <span class="hljs-number">0.77880078</span>,  <span class="hljs-number">0.8824969</span> ,  <span class="hljs-number">0.77880078</span>,  <span class="hljs-number">0.53526143</span> ],        [ <span class="hljs-number">0.60653066</span>,  <span class="hljs-number">0.8824969</span> ,  <span class="hljs-number">1.</span>        ,  <span class="hljs-number">0.8824969</span> ,  <span class="hljs-number">0.</span> <span class="hljs-number">60653066</span>],        [ <span class="hljs-number">0.53526143</span>,  <span class="hljs-number">0.77880078</span>,  <span class="hljs-number">0.8824969</span> ,  <span class="hljs-number">0.77880078</span>,  <span class="hljs-number">0.53526143</span> ],        [ <span class="hljs-number">0.36787944</span>,  <span class="hljs-number">0.53526143</span>,  <span class="hljs-number">0.60653066</span>,  <span class="hljs-number">0.53526143</span>,  <span class="hljs-number">0.36787944</span> ]]) 
+# G is a simple, unnormalized Gaussian kernel where the value at (0,0) is 1.0 
+&gt;&gt;&gt; G = np.exp(-(np.multiply(X,X) + np.multiply(Y,Y))/2) &gt;&gt;&gt; G array([[ 0.36787944,  0.53526143,  0.60653066,  0.53526143,  0.36787944],        [ 0.53526143,  0.77880078,  0.8824969 ,  0.77880078,  0.53526143 ],        [ 0.60653066,  0.8824969 ,  1.        ,  0.8824969 ,  0. 60653066],        [ 0.53526143,  0.77880078,  0.8824969 ,  0.77880078,  0.53526143 ],        [ 0.36787944,  0.53526143,  0.60653066,  0.53526143,  0.36787944 ]]) 
 
-<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> skimage <span class="hljs-keyword">import</span> data, color 
-<span class="hljs-meta">&gt;&gt;&gt; </span>cat = color.rgb2gray(data.chelsea()) 
+&gt;&gt;&gt; from skimage import data, color 
+&gt;&gt;&gt; cat = color.rgb2gray(data.chelsea()) 
 
-<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> scipy <span class="hljs-keyword">import</span> signal 
-<span class="hljs-meta">&gt;&gt;&gt; </span>blurred_cat = signal.convolve2d(cat, G, mode=<span class="hljs-string">'valid'</span>) 
+&gt;&gt;&gt; from scipy import signal 
+&gt;&gt;&gt; blurred_cat = signal.convolve2d(cat, G, mode='valid') 
 
-<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt 
-<span class="hljs-meta">&gt;&gt;&gt; </span>fig, (ax1, ax2) = plt.subplots(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, figsize=(<span class="hljs-number">10</span>,<span class="hljs-number">4</span>),  ...                                sharex=<span class="hljs-literal">True</span>, sharey=<span class="hljs-literal">True</span>) 
+&gt;&gt;&gt; import matplotlib.pyplot as plt 
+&gt;&gt;&gt; fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10,4),  ...                                sharex=True, sharey=True) 
 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.axis(<span class="hljs-string">'off'</span>) 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.imshow(cat, cmap=plt.cm.gray) 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.set_title(<span class="hljs-string">'Input image'</span>) 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax1.set_adjustable(<span class="hljs-string">'box-forced'</span>) 
+&gt;&gt;&gt; ax1.axis('off') 
+&gt;&gt;&gt; ax1.imshow(cat, cmap=plt.cm.gray) 
+&gt;&gt;&gt; ax1.set_title('Input image') 
+&gt;&gt;&gt; ax1.set_adjustable('box-forced') 
 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax2.axis(<span class="hljs-string">'off'</span>) 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax2.imshow(blurred_cat, cmap=plt.cm.gray) 
-<span class="hljs-meta">&gt;&gt;&gt; </span>ax2.set_title(<span class="hljs-string">'After convolving with a Gaussian filter'</span>)&gt;&gt;&gt; ax2.set_adjustable(<span class="hljs-string">'box-forced'</span>)
+&gt;&gt;&gt; ax2.axis('off') 
+&gt;&gt;&gt; ax2.imshow(blurred_cat, cmap=plt.cm.gray) 
+&gt;&gt;&gt; ax2.set_title('After convolving with a Gaussian filter')&gt;&gt;&gt; ax2.set_adjustable('box-forced')
 </code></pre>
 <p><img src="images/chapter8/8-9.png" alt="图8-9"></img></p>
 <p>AlxNet 中的卷积层是三维的。换言之，它们对前一层的三维像素进行操作。第一卷积神经网络采用原始 RGB 图像，并在所有三个颜色通道中学习用于局部图像邻域的卷积滤波器。随后的层跨越空间和内核尺寸将其作为输入像素。</p>
@@ -525,7 +525,7 @@ ax3.set_adjustable(<span class="hljs-string">'box-forced'</span>)
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"八、自动化特征提取器：图像特征提取和深度学习","level":"1.9","depth":1,"next":{"title":"九、回到特征：将它们放到一起","level":"1.10","depth":1,"ref":"","articles":[]},"previous":{"title":"七、非线性特征提取和模型堆叠","level":"1.8","depth":1,"path":"7.非线性特征提取和模型堆叠.md","ref":"./7.非线性特征提取和模型堆叠.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"8.自动化特征提取器：图像特征提取和深度学习.md","mtime":"2024-08-24T12:46:14.056Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-08-24T12:50:39.023Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"八、自动化特征提取器：图像特征提取和深度学习","level":"1.9","depth":1,"next":{"title":"九、回到特征：将它们放到一起","level":"1.10","depth":1,"ref":"","articles":[]},"previous":{"title":"七、非线性特征提取和模型堆叠","level":"1.8","depth":1,"path":"7.非线性特征提取和模型堆叠.md","ref":"./7.非线性特征提取和模型堆叠.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"8.自动化特征提取器：图像特征提取和深度学习.md","mtime":"2025-01-05T17:59:25.889Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-05T17:59:35.861Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

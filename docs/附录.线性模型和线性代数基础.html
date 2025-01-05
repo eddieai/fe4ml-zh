@@ -6,7 +6,7 @@
         <title>附录、线性模型和线性代数基础 · HonKit</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="HonKit 5.1.4">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -49,7 +49,7 @@
     
     
     <meta name="HandheldFriendly" content="true"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
@@ -394,10 +394,12 @@
 <p>这实际上是计算<code>a</code>的伪逆的过程，它利用了一个标准正交基的一个关键性质：转置就是逆。这就是 SVD 如此强大的原因。（在实践中，真正的线性系统求解器不使用 SVD，因为它们计算是相当昂贵。还有其他更便宜的方法来分解矩阵，比如 QR、LU 或乔列斯基分解）。</p>
 <p>然而，我们在匆忙中漏掉了一个小细节。如果奇异值为零会怎样？我们不能取零为倒数，因为<code>1/0=∞</code>。这就是为什么它叫伪逆。（矩形矩阵没有真实逆的定义，只有方阵（只要所有特征值非零）。无论输入什么，它的奇异值都为零；没有办法重新跟踪它的步骤并得出原始的输入。</p>
 <p>好吧，让我们倒回来看这个小细节。让我们带着我们学到的，再往前走看看能不能把机器拆开。假设我们得到了<code>Aw=y</code>的答案，我们称它为特定的<code>w</code>，因为它特别适合<code>y</code>。假设还有一堆输入向量<code>A</code>被压到 0。让我们选一个，称它为 Wsad-trumpet。因为wah。那么当我们把 Wparticular 添加到 Wsad-trumpet，您认为会发生什么呢？</p>
-<pre><code>A(Wparticular + Wsad-trumpet) = y
-</code></pre><p>神奇！这也是一个解。事实上，任何被压缩到零的输入都可以被添加到一个特定的解中，并解决方案是这样的：</p>
-<pre><code>Wgeneral = Wparticular + Whomogeneous
-</code></pre><p>Wparticular 是方程<code>Aw=y</code>的精确解，可能有也可能没有这样的解。如果没有，那么系统只能近似地解决。如果有，那么<code>y</code>属于已知的<code>a</code>的列空间，列空间是<code>A</code>可以映射到的向量集合，通过它的列的线性组合。</p>
+<pre><code class="lang-python">A(Wparticular + Wsad-trumpet) = y
+</code></pre>
+<p>神奇！这也是一个解。事实上，任何被压缩到零的输入都可以被添加到一个特定的解中，并解决方案是这样的：</p>
+<pre><code class="lang-python">Wgeneral = Wparticular + Whomogeneous
+</code></pre>
+<p>Wparticular 是方程<code>Aw=y</code>的精确解，可能有也可能没有这样的解。如果没有，那么系统只能近似地解决。如果有，那么<code>y</code>属于已知的<code>a</code>的列空间，列空间是<code>A</code>可以映射到的向量集合，通过它的列的线性组合。</p>
 <p>Whomogeneous 是方程<code>Aw = 0</code>的解。（Wsadd-trumpet 的完整名称是“Whomogeneous”。）这一点现在应该很熟悉了。所有的广义向量的集合构成了<code>a</code>的零空间，这是具有奇异值为 0 的右奇异向量张成的空间。</p>
 <p>“零空间”这个名字听起来像是一场生死攸关的危机的结局。如果零空间包含除零向量之外的任何向量，那么就有方程<code>Aw = y</code>有无穷多个解，有太多的解可供选择</p>
 <p>来自本身并不是一件坏事。有时任何解决方案都可以。</p>
@@ -463,7 +465,7 @@ Scikit Learn的sklearn-neighbors包</p>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"附录、线性模型和线性代数基础","level":"1.11","depth":1,"previous":{"title":"九、回到特征：将它们放到一起","level":"1.10","depth":1,"ref":"","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"附录.线性模型和线性代数基础.md","mtime":"2024-08-23T21:06:04.241Z","type":"markdown"},"gitbook":{"version":"5.1.4","time":"2024-08-24T12:50:39.023Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"附录、线性模型和线性代数基础","level":"1.11","depth":1,"previous":{"title":"九、回到特征：将它们放到一起","level":"1.10","depth":1,"ref":"","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"附录.线性模型和线性代数基础.md","mtime":"2025-01-05T17:59:25.889Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-05T17:59:35.861Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
